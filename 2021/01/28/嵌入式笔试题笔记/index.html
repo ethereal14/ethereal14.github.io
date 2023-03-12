@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ethereal14.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="笔试题笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="嵌入式笔试题笔记">
+<meta property="og:url" content="https://ethereal14.github.io/2021/01/28/%E5%B5%8C%E5%85%A5%E5%BC%8F%E7%AC%94%E8%AF%95%E9%A2%98%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="MiengGiet Blog">
+<meta property="og:description" content="笔试题笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-28T07:29:41.000Z">
+<meta property="article:modified_time" content="2023-03-12T16:03:10.205Z">
+<meta property="article:author" content="MiengGiet">
+<meta property="article:tag" content="笔试">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://ethereal14.github.io/2021/01/28/%E5%B5%8C%E5%85%A5%E5%BC%8F%E7%AC%94%E8%AF%95%E9%A2%98%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>嵌入式笔试题笔记 | MiengGiet Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="MiengGiet Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MiengGiet Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">学习记录</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ethereal14.github.io/2021/01/28/%E5%B5%8C%E5%85%A5%E5%BC%8F%E7%AC%94%E8%AF%95%E9%A2%98%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/bh3.jpg">
+      <meta itemprop="name" content="MiengGiet">
+      <meta itemprop="description" content="摸鱼">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MiengGiet Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+		  嵌入式笔试题笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-28 15:29:41" itemprop="dateCreated datePublished" datetime="2021-01-28T15:29:41+08:00">2021-01-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-13 00:03:10" itemprop="dateModified" datetime="2023-03-13T00:03:10+08:00">2023-03-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AC%94%E9%9D%A2%E8%AF%95%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">笔面试相关</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+            <div class="post-description">笔试题笔记</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="寒武纪笔试题"><a href="#寒武纪笔试题" class="headerlink" title="寒武纪笔试题"></a>寒武纪笔试题</h2><ol>
+<li><p><strong>单片机IO口开漏输出和推挽输出有什么区别？</strong> </p>
+<p> 开漏输出：只能输出低电平，如果要输出高电平必须通过上拉电阻才能实现。就类似于三极管的集电极输出。</p>
+</li>
+</ol>
+<pre><code>推挽输出：推挽输出既可以输出低电平，也可以输出高电平，可以直接驱动功耗不大的数字器件。导通损耗小、效率高、既提高电路的负载能力，又提高开关速度</code></pre>
+<p><strong>补充</strong>：</p>
+<ul>
+<li>上拉&amp;下拉输出电阻作用： 防止输入端悬空，减少外部电流对芯片的干扰，限流，增加高电平输出时的驱动能力。</li>
+<li>浮空输入：IO的电平是不确定的，有外部输入决定。多用于外部按键。</li>
+<li>模拟输入： 即关闭施密特触发器，将电压信号传送到片上外设模块(不接上下拉电阻)。 </li>
+</ul>
+<ol start="2">
+<li><p><strong>单片机里定时器有什么作用和优势？</strong> </p>
+<p> 作用：计数器、延时、输入捕获（解码和测量时间间隔）、输出比较（主要输出PWM波）、单脉冲输出、触发中断（对其他模块进行操作）</p>
+<p> 优势：不需要CPU参与，精确</p>
+</li>
+</ol>
+<ol start="3">
+<li><p><strong>什么是Nyquist采样定理？如果需要通过512点FFT分析200-10KHz信号频谱，频谱分辨率不低于40Hz，此时采样频率需在什么范围？</strong> </p>
+<p> ​            频率分辨率可以理解为在使用DFT时，在频率轴上的所能得到的最小频率间隔f0=fs/N=1/NTs=1/T,其中N为            采样点数，fs为采样频率，Ts为采样间隔。所以采样频率不低于20480hz.与采样频率的不低于20000hz综            合得不低于20480hz <strong>（做不来、也没看懂解析）</strong></p>
+</li>
+</ol>
+<ol start="4">
+<li><p><strong>已知单片机内置12位精度的ADC，单片机工作电压3.3V，ADC基准电压3V，请计算ADC采样的电压最小分辨率是多少？如果单片机ADC输入口电压为1V，则采样得到的值是多少？</strong></p>
+<p> ​        3.3/4096 V         4096/3.3(自己的答案)</p>
+<p> ​        3/4096 v            1365(4096/3)(评论区答案)</p>
+</li>
+</ol>
+<ol start="5">
+<li><p><strong>同步通信和异步通信有什么区别？UART、SPI和I2C分别属于什么类型的通信方式？</strong> </p>
+<p> ​    同步通信： 发送端与接收端时钟频率一致。 逐字符发送，无间隙。通信效率高。</p>
+<p> ​    异步通信： 不要求接收端时钟和发送端时钟同步。 需要有起始位和停止位，传输效率较低。</p>
+<p> ​    UART：异步通信。</p>
+<p> ​    SPI：同步通信。</p>
+<p> ​    I2C：同步通信</p>
+</li>
+</ol>
+<ol start="6">
+<li><p><strong>简述通过I2C接口读取设备X的寄存器Y的值的过程</strong> </p>
+<p> 发送i2c开始信号-发送设备x的地址-等待设备应答-发送寄存器Y的地址-等待应答-发送i2c开始信号-发送设备X的读地址-等待设备应答-接收寄存器Y的数据-等待应答-停止i2c</p>
+</li>
+</ol>
+<ol start="7">
+<li><p><strong>中断是什么？请简述单片机中断处理的过程</strong> </p>
+<p> 中断： CPU在正常执行程序的过程中，由于内部/外部事件的触发或程序的预先安排引起CPU暂时中断当前正在运行的程序，而转去执行中断服务子程序，待中断服务子程序执行完毕后，CPU继续执行原来的程序</p>
+<p>   <strong>中断处理的过程：</strong></p>
+<p> ​    第一步：保护现场，将当前位置的PC地址压栈；</p>
+<p> ​    第二步：跳转到中断服务程序，执行中断服务程序；</p>
+<p> ​    第三步：恢复现场，将栈顶的值回送给PC；<br> ​    第四步：跳转到被中断的位置开始执行下一个指令； </p>
+</li>
+</ol>
+<ol start="8">
+<li><p><strong>相比于正常子函数，中断服务函数有什么特点和需要注意的地方？</strong> </p>
+<p> ​    无返回值、不能向中断服务函数传递参数、短小、需要快进快出、不能递归调用自身 </p>
+</li>
+</ol>
+<ol start="9">
+<li><p><strong>对于char型变量 a，写两段代码分别将 a的 bit 6置1和置0</strong> </p>
+<p> ​    a| = (a&lt;&lt;6);</p>
+<p> ​    a&amp; = ~(a&lt;&lt;6);</p>
+</li>
+</ol>
+<ol start="10">
+<li><p><strong>请写一段代码，可以将输入为”0.0.0.0”—“255.255.255.255”的字符串转换为int型整数数组。</strong></p>
+<p><strong>输入：”255.255.255.255”</strong></p>
+<p><strong>输出：255 255 255 255 （数组）</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> ch[<span class="number">20</span>];</span><br><span class="line">	<span class="keyword">int</span> num[<span class="number">20</span>],len = <span class="number">0</span>,count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>, ch);</span><br><span class="line">	len = <span class="built_in">strlen</span>(ch);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, len);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; len; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (ch[i] == <span class="string">&#x27;.&#x27;</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			count++;</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		num[count] *= <span class="number">10</span>;</span><br><span class="line">		num[count] += (ch[i] - <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>, num[i]);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+	<div>
+		
+			<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------THE END-------------</div>
+    
+</div>
+
+		
+	</div>
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/wechat_channel.jpg">
+            <span class="icon">
+              <i class="fab fa-weixin"></i>
+            </span>
+
+            <span class="label">WeChat</span>
+          </a>
+        </div>
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AC%94%E8%AF%95/" rel="tag"># 笔试</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/14/linux%E9%A9%B1%E5%8A%A8%E6%A1%86%E6%9E%B6%E6%80%BB%E7%BB%93/" rel="prev" title="linux驱动框架总结">
+      <i class="fa fa-chevron-left"></i> linux驱动框架总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/04/Linux-C-%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" rel="next" title="Linux C 网络编程">
+      Linux C 网络编程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%92%E6%AD%A6%E7%BA%AA%E7%AC%94%E8%AF%95%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">寒武纪笔试题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MiengGiet"
+      src="/images/bh3.jpg">
+  <p class="site-author-name" itemprop="name">MiengGiet</p>
+  <div class="site-description" itemprop="description">摸鱼</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ethereal14" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ethereal14" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1097282916@qq.com" title="E-Mail → mailto:1097282916@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MiengGiet</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">92k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:24</span>
+</div>
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共30.4k字</span>
+</div>
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<script type="text/javascript" src="/js/clicklove.js"></script>
+<!-- 动态背景 -->
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+

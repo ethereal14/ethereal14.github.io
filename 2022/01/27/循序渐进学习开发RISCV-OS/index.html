@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ethereal14.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="练习与笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="循序渐进学习开发RISCV-OS">
+<meta property="og:url" content="https://ethereal14.github.io/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/index.html">
+<meta property="og:site_name" content="MiengGiet Blog">
+<meta property="og:description" content="练习与笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ethereal14.github.io/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220813191251160.png">
+<meta property="og:image" content="https://ethereal14.github.io/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220820223553230.png">
+<meta property="og:image" content="https://ethereal14.github.io/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220820225734713.png">
+<meta property="og:image" content="https://ethereal14.github.io/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220820225828577.png">
+<meta property="og:image" content="https://ethereal14.github.io/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220820232154908.png">
+<meta property="article:published_time" content="2022-01-27T13:57:05.000Z">
+<meta property="article:modified_time" content="2023-03-12T16:03:10.205Z">
+<meta property="article:author" content="MiengGiet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ethereal14.github.io/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220813191251160.png">
+
+<link rel="canonical" href="https://ethereal14.github.io/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>循序渐进学习开发RISCV-OS | MiengGiet Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="MiengGiet Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MiengGiet Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">学习记录</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ethereal14.github.io/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/bh3.jpg">
+      <meta itemprop="name" content="MiengGiet">
+      <meta itemprop="description" content="摸鱼">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MiengGiet Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+		  循序渐进学习开发RISCV-OS
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-27 21:57:05" itemprop="dateCreated datePublished" datetime="2022-01-27T21:57:05+08:00">2022-01-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-13 00:03:10" itemprop="dateModified" datetime="2023-03-13T00:03:10+08:00">2023-03-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>14 分钟</span>
+            </span>
+            <div class="post-description">练习与笔记</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h1><h2 id="算术运算指令"><a href="#算术运算指令" class="headerlink" title="算术运算指令"></a>算术运算指令</h2><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>语法</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>add</td>
+<td>add rd, rs1, rs2</td>
+<td>rs1和rs2的值相加，结果保存到rd</td>
+<td>add x5, x6, x7</td>
+</tr>
+<tr>
+<td>sub</td>
+<td>sub rd, rs1, rs2</td>
+<td>rs1的值减去rs2的值，结果保存到rd</td>
+<td>sub x5, x6, x7</td>
+</tr>
+<tr>
+<td>addi</td>
+<td>addi rd, rs1, imm</td>
+<td>rs1的值和imm相加，结果保存到rd</td>
+<td>addi x5, x6, 100</td>
+</tr>
+<tr>
+<td>lui</td>
+<td>lui rd, imm</td>
+<td>构造一个32位的数，高20位存放imm，低12位清零。结果保存到rd</td>
+<td>lui x5, 0x12345</td>
+</tr>
+<tr>
+<td>auipc</td>
+<td>auipc rd, imm</td>
+<td>构造一个32位的数，高20位存放imm，低12位清零。结果和pc相加后保存到rd</td>
+<td>auipc x5, 0x12345</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>伪指令</th>
+<th>语法</th>
+<th>等价指令</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>li</td>
+<td>li rd, imm</td>
+<td>lui和addi的组合</td>
+<td>将立即数imm加载到rd中</td>
+<td>li x5, 0x12345678</td>
+</tr>
+<tr>
+<td>la</td>
+<td>la rd, label</td>
+<td>auipc和addi的组合</td>
+<td>为rd加载一个地址值</td>
+<td>la x5, label</td>
+</tr>
+<tr>
+<td>neg</td>
+<td>neg rd, rs</td>
+<td>sub rd, x0, rs</td>
+<td>对rs中的值取反并将结果存放在rd中</td>
+<td>neg x5, x6</td>
+</tr>
+<tr>
+<td>mv</td>
+<td>mv rd, rs</td>
+<td>addi rd, rs, 0</td>
+<td>将rs中的值拷贝到rd中</td>
+<td>mv x5, x6</td>
+</tr>
+<tr>
+<td>nop</td>
+<td>nop</td>
+<td>addi x0, x0, 0</td>
+<td>什么也不做</td>
+<td>nop</td>
+</tr>
+</tbody></table>
+<h3 id="ADD"><a href="#ADD" class="headerlink" title="ADD"></a>ADD</h3><table>
+<thead>
+<tr>
+<th>语法</th>
+<th>add rd, rs1, rs2</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>例子</strong></td>
+<td>add x5, x6, x7</td>
+<td>x5 = x6 + x7</td>
+</tr>
+</tbody></table>
+<ul>
+<li>编码格式：<strong>R-type</strong>， 寄存器类型<ul>
+<li>opcode：0110011</li>
+</ul>
+</li>
+<li>符号拓展：最高位(符号位)为1，零扩展：最高位(符号位)为0</li>
+<li>有符号数在计算机中表示：二进制补码</li>
+<li>补码→原码：减一取反</li>
+</ul>
+<h3 id="SUB"><a href="#SUB" class="headerlink" title="SUB"></a>SUB</h3><table>
+<thead>
+<tr>
+<th>语法</th>
+<th>sub rd, rs1, rs2</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>例子</strong></td>
+<td>sub x5, x6, x7</td>
+<td>x5 = x6 - x7</td>
+</tr>
+</tbody></table>
+<h3 id="ADDI"><a href="#ADDI" class="headerlink" title="ADDI"></a>ADDI</h3><table>
+<thead>
+<tr>
+<th>语法</th>
+<th>addi rd, rs1, IMM</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>例子</strong></td>
+<td>addi x5, x6, 1</td>
+<td>x5 = x6 + 1</td>
+</tr>
+</tbody></table>
+<ul>
+<li>编码格式：<strong>I-type</strong>，立即数格式<ul>
+<li>opcode：0b0010011</li>
+</ul>
+</li>
+<li>缺陷：<ul>
+<li>immediate立即数占12位</li>
+<li>参与运算时会被<strong>符号拓展</strong>为一个32位的数</li>
+<li>这个立即数表示的范围为[-2048, 2047)</li>
+<li><strong>RISCV没有提供subi指令</strong></li>
+</ul>
+</li>
+<li>问题：如何构造大数，一个32位的数<ul>
+<li>思路：<ul>
+<li>引入一个新的命令先设置高20位，存放在rs1</li>
+<li>然后复用现有的addi命令补上剩余的低12位即可</li>
+<li>[LUI指令](#LUI(Lod Upper Immediate))</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="基于算术运算指令实现的其他伪指令"><a href="#基于算术运算指令实现的其他伪指令" class="headerlink" title="基于算术运算指令实现的其他伪指令"></a>基于算术运算指令实现的其他伪指令</h3><table>
+<thead>
+<tr>
+<th>伪指令</th>
+<th>语法</th>
+<th>等价指令</th>
+<th>指令描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>neg</td>
+<td>neg rd, rs</td>
+<td>sub rd, x0, rs</td>
+<td>对rs中的值取反并将结果存放在rd中</td>
+<td>neg x5, x6</td>
+</tr>
+<tr>
+<td>mv</td>
+<td>mv rd, rs</td>
+<td>addi rd, rs, 0</td>
+<td>将rs中的值拷贝到rd中</td>
+<td>mv x5, x6</td>
+</tr>
+<tr>
+<td>nop</td>
+<td>nop</td>
+<td>addi x0, x0, 0</td>
+<td>什么也不做</td>
+<td>nop</td>
+</tr>
+</tbody></table>
+<h3 id="LUI-Lod-Upper-Immediate"><a href="#LUI-Lod-Upper-Immediate" class="headerlink" title="LUI(Lod Upper Immediate)"></a>LUI(Lod Upper Immediate)</h3><table>
+<thead>
+<tr>
+<th>语法</th>
+<th>lui rd, imm</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>例子</strong></td>
+<td>lui x5, 0x12345</td>
+<td>x5 = 0x12345 &lt;&lt; 12</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>编码格式：<strong>U-type</strong> </p>
+<ul>
+<li>opcode：0b0110111</li>
+</ul>
+</li>
+<li><p>lui指令构造一个32bits的立即数，这个立即数的高20位对应指令中的imm，低12位清零。这个立即数作为结果存放在rd中</p>
+</li>
+<li><p>利用lui+addi来为寄存器加载一个大数：</p>
+<ul>
+<li><p>0x12345678</p>
+<ul>
+<li><p>lui x1, 0x12345</p>
+<p>addi x1, x1, 0x678</p>
+</li>
+</ul>
+</li>
+<li><p>特殊情况：0x12345FFF：0xFFF是个负数，直接用addi是错误的</p>
+<ul>
+<li><p>lui x1, 0x12346</p>
+<p>addi x1, x1, -1</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="LI"><a href="#LI" class="headerlink" title="LI"></a>LI</h3><table>
+<thead>
+<tr>
+<th>语法</th>
+<th>li rd, imm</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>例子</strong></td>
+<td>li x5, 0x12345789</td>
+<td>x5 = 0x12345678</td>
+</tr>
+</tbody></table>
+<ul>
+<li>li是一个伪指令</li>
+<li>汇编器会根据imm的实际情况自动生成正确的真实指令</li>
+<li>用来代替lui</li>
+</ul>
+<h3 id="AUIPC"><a href="#AUIPC" class="headerlink" title="AUIPC"></a>AUIPC</h3><table>
+<thead>
+<tr>
+<th>语法</th>
+<th>auipc rd, imm</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>例子</strong></td>
+<td>auipc x5, 0x12345</td>
+<td>x5 = 0x12345 &lt;&lt; 12 + PC</td>
+</tr>
+</tbody></table>
+<ul>
+<li>编码格式：<strong>U-type</strong><ul>
+<li>和lui指令类似，auipc指令构造一个32bits的立即数，这个立即数高20位对应指令中的imm，低12位清零。<strong>不同的是auipc会先将这个立即数和pc值相加，将相加的结果放入rd中</strong></li>
+</ul>
+</li>
+<li>用于构造相对地址：相对PC值</li>
+</ul>
+<h3 id="LA-Load-Address"><a href="#LA-Load-Address" class="headerlink" title="LA(Load Address)"></a>LA(Load Address)</h3><table>
+<thead>
+<tr>
+<th>语法</th>
+<th>la rd, label</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>例子</strong></td>
+<td>la x5, foo</td>
+<td></td>
+</tr>
+</tbody></table>
+<ul>
+<li>LA是一个伪指令</li>
+<li>具体编程时给出需要加载的label，编译器会根据实际情况利用auipc和其他指令自动生成正确的指令序列</li>
+<li>常用于加载一个函数或变量地址</li>
+</ul>
+<h2 id="逻辑运算指令"><a href="#逻辑运算指令" class="headerlink" title="逻辑运算指令"></a>逻辑运算指令</h2><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>格式</th>
+<th>语法</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AND</td>
+<td>R-type</td>
+<td>AND RD, RS1, RS2</td>
+<td>RD = RS1 &amp; RS2</td>
+<td>and x5, x6, x7</td>
+</tr>
+<tr>
+<td>OR</td>
+<td>R-type</td>
+<td>OR RD, RS1, RS2</td>
+<td>RD = RS1 | RS2</td>
+<td>or x5, x6, x7</td>
+</tr>
+<tr>
+<td>XOR</td>
+<td>R-type</td>
+<td>XOR RD, RS1, RS2</td>
+<td>RD = RS1 ^ RS2</td>
+<td>xor x5, x6, x7</td>
+</tr>
+<tr>
+<td>ANDI</td>
+<td>I-type</td>
+<td>ANDI RD, RS1, RS2</td>
+<td>RD = RS1 &amp; IMM</td>
+<td>andi x5, x6, 20</td>
+</tr>
+<tr>
+<td>ORI</td>
+<td>I-type</td>
+<td>ORI RD, RS1, RS2</td>
+<td>RD = RS1 | IMM</td>
+<td>ori x5, x6, 20</td>
+</tr>
+<tr>
+<td>XORI</td>
+<td>I-type</td>
+<td>XORI RD, RS1, IMM</td>
+<td>RD = RS1 ^ IMM</td>
+<td>xor x5, x6, 20</td>
+</tr>
+</tbody></table>
+<ul>
+<li>逻辑指令都是按位操作</li>
+<li>xor(异或)：相同为0，相异为1</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>伪指令</th>
+<th>语法</th>
+<th>等价指令</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NOT</td>
+<td>NOT RD, RS</td>
+<td>XORI RD, RS, -1</td>
+<td>对RS的值取反，结果存在RD中</td>
+<td>not x5, x6</td>
+</tr>
+</tbody></table>
+<p>这里-1表示为16进制就是 0xFFFFFFFF，在和RS中的值异或，就达到取反的目的</p>
+<h2 id="移位运算指令"><a href="#移位运算指令" class="headerlink" title="移位运算指令"></a>移位运算指令</h2><h3 id="逻辑移位"><a href="#逻辑移位" class="headerlink" title="逻辑移位"></a>逻辑移位</h3><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>格式</th>
+<th>语法</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SLL</td>
+<td>R-type</td>
+<td>SLL RD, RS1, RS2</td>
+<td>逻辑左移</td>
+<td>sll x5, x6, x7</td>
+</tr>
+<tr>
+<td>SRL</td>
+<td>R-type</td>
+<td>SRL RD, RS1, RS2</td>
+<td>逻辑右移</td>
+<td>srl x5, x6, x7</td>
+</tr>
+<tr>
+<td>SLLI</td>
+<td>I-type</td>
+<td>SRLLI RD, RS1, IMM</td>
+<td>逻辑左移立即数</td>
+<td>slli x5, x6, 3</td>
+</tr>
+<tr>
+<td>SRLI</td>
+<td>I-type</td>
+<td>SRLI RD, RS1, IMM</td>
+<td>逻辑右移立即数</td>
+<td>srli x5, x6, 3</td>
+</tr>
+</tbody></table>
+<ul>
+<li>逻辑左移、逻辑右移都是补0</li>
+</ul>
+<h3 id="算术移位"><a href="#算术移位" class="headerlink" title="算术移位"></a>算术移位</h3><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>格式</th>
+<th>语法</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SRA</td>
+<td>R-type</td>
+<td>SRA RD, RS1, RS2</td>
+<td>算术右移 RD = RS1 &gt;&gt; RS2</td>
+<td>sra x5, x6, x7</td>
+</tr>
+<tr>
+<td>SRAI</td>
+<td>I-type</td>
+<td>SRAI RD, RS1, IMM</td>
+<td>算术右移立即数 RD = RS1 &gt;&gt; IMM</td>
+<td>srai x5, x6, 3</td>
+</tr>
+</tbody></table>
+<ul>
+<li>算术右移时按照符号位值填充</li>
+<li>算术移位只有右移，没有左移：左移会把符号位移走，就没意义了</li>
+<li>算术移位可以作为负数除法</li>
+</ul>
+<h2 id="内存读写指令"><a href="#内存读写指令" class="headerlink" title="内存读写指令"></a>内存读写指令</h2><ul>
+<li>内存读指令：Load，将数据从内存读入寄存器</li>
+<li>内存写指令：Store，将数据从寄存器写出内存</li>
+</ul>
+<h3 id="内存读（Load）"><a href="#内存读（Load）" class="headerlink" title="内存读（Load）"></a>内存读（Load）</h3><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>格式</th>
+<th>语法</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LB</td>
+<td>I-type</td>
+<td>LB RD, IMM(RS1)</td>
+<td>Load Byte，从内存中读取一个8bits的数据到RD中，内存地址 = RS1 + IMM</td>
+<td>lb x5, 40(x6)</td>
+</tr>
+<tr>
+<td>LBU</td>
+<td>I-type</td>
+<td>LBU RD, IMM(RS1)</td>
+<td>Load Byte，从内存中读取一个8bit的数据到RD中</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>//TODO</p>
+<h1 id="exercises"><a href="#exercises" class="headerlink" title="exercises"></a>exercises</h1><h2 id="ch3-编译与链接"><a href="#ch3-编译与链接" class="headerlink" title="ch3 编译与链接"></a>ch3 编译与链接</h2><h3 id="练习3-1"><a href="#练习3-1" class="headerlink" title="练习3-1"></a>练习3-1</h3><p>使⽤ gcc 编译代码并使⽤ binutils ⼯具对⽣成的⽬标文件和可执⾏文件（ELF 格式）进⾏分析。具体要求如下： </p>
+<ul>
+<li><p><input checked disabled type="checkbox">  编写⼀个简单的打印 “hello world！” 的程序源文件：<code>hello.c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;hello world!\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><input checked disabled type="checkbox">  对源文件进⾏本地编译，⽣成针对⽀持 x86_64 指令集架构处理器的⽬标文件 <code>hello.o</code>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc hello.c -c -o hello.o</span><br></pre></td></tr></table></figure>
+
+<p>补充gcc常用选项：</p>
+<p><code>gcc [options] [filename]</code></p>
+<table>
+<thead>
+<tr>
+<th>常用选项</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-E</td>
+<td>只做预处理</td>
+</tr>
+<tr>
+<td>-c</td>
+<td>只编译不连接，生成目标文件”.o”</td>
+</tr>
+<tr>
+<td>-S</td>
+<td>生成汇编代码</td>
+</tr>
+<tr>
+<td>-o file</td>
+<td>把输出生成到由file指定文件名的文件中</td>
+</tr>
+<tr>
+<td>-g</td>
+<td>在输出的文件中加入支持调试的信息</td>
+</tr>
+<tr>
+<td>-v</td>
+<td>显示输出详细的命令执行过程信息</td>
+</tr>
+</tbody></table>
+</li>
+<li><p><input checked disabled type="checkbox">  查看 <code>hello.o</code> 的文件的文件头信息。 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readelf -h hell.o</span><br></pre></td></tr></table></figure>
+
+<p>信息如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">ELF 头：</span><br><span class="line">  Magic：   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 </span><br><span class="line">  类别:                              ELF64</span><br><span class="line">  数据:                              2 补码，小端序 (little endian)</span><br><span class="line">  Version:                           1 (current)</span><br><span class="line">  OS/ABI:                            UNIX - System V</span><br><span class="line">  ABI 版本:                          0</span><br><span class="line">  类型:                              REL (可重定位文件)</span><br><span class="line">  系统架构:                          Advanced Micro Devices X86-64</span><br><span class="line">  版本:                              0x1</span><br><span class="line">  入口点地址：               0x0</span><br><span class="line">  程序头起点：          0 (bytes into file)</span><br><span class="line">  <span class="keyword">Start</span> <span class="keyword">of</span> <span class="keyword">section</span> headers:          <span class="number">792</span> (<span class="keyword">bytes</span> <span class="keyword">into</span> <span class="keyword">file</span>)</span><br><span class="line">  标志：             <span class="number">0x0</span></span><br><span class="line">  <span class="keyword">Size</span> <span class="keyword">of</span> this header:               <span class="number">64</span> (<span class="keyword">bytes</span>)</span><br><span class="line">  <span class="keyword">Size</span> <span class="keyword">of</span> program headers:           <span class="number">0</span> (<span class="keyword">bytes</span>)</span><br><span class="line">  <span class="built_in">Number</span> <span class="keyword">of</span> program headers:         <span class="number">0</span></span><br><span class="line">  <span class="keyword">Size</span> <span class="keyword">of</span> <span class="keyword">section</span> headers:           <span class="number">64</span> (<span class="keyword">bytes</span>)</span><br><span class="line">  <span class="built_in">Number</span> <span class="keyword">of</span> <span class="keyword">section</span> headers:         <span class="number">14</span></span><br><span class="line">  <span class="keyword">Section</span> header <span class="keyword">string</span> <span class="keyword">table</span> <span class="keyword">index</span>: <span class="number">13</span></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p><input checked disabled type="checkbox">  查看 <code>hello.o</code> 的 Section header table。 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readelf -SW hello.c</span><br></pre></td></tr></table></figure>
+
+<p>信息如下：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">There are<span class="number"> 14 </span>section headers, starting at offset 0x318:</span><br><span class="line"></span><br><span class="line">节头：</span><br><span class="line">  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [ 0]                   NULL           <span class="number"> 0000000000000000 </span>000000<span class="number"> 000000 </span>00     <span class="number"> 0 </span> <span class="number"> 0 </span> 0</span><br><span class="line">  [ 1] .text             PROGBITS       <span class="number"> 0000000000000000 </span>000040 00001b<span class="number"> 00 </span> AX <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [ 2] .rela.text        RELA           <span class="number"> 0000000000000000 </span>000258<span class="number"> 000030 </span>18   I<span class="number"> 11 </span> <span class="number"> 1 </span> 8</span><br><span class="line">  [ 3] .data             PROGBITS       <span class="number"> 0000000000000000 </span>00005b<span class="number"> 000000 </span>00  WA <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [ 4] .bss              NOBITS         <span class="number"> 0000000000000000 </span>00005b<span class="number"> 000000 </span>00  WA <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [ 5] .rodata           PROGBITS       <span class="number"> 0000000000000000 </span>00005b 00000d<span class="number"> 00 </span>  A <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [ 6] .comment          PROGBITS       <span class="number"> 0000000000000000 </span>000068 00002b<span class="number"> 01 </span> MS <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [ 7] .note.GNU-stack   PROGBITS       <span class="number"> 0000000000000000 </span>000093<span class="number"> 000000 </span>00     <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [ 8] .note.gnu.property NOTE           <span class="number"> 0000000000000000 </span>000098<span class="number"> 000020 </span>00   A <span class="number"> 0 </span> <span class="number"> 0 </span> 8</span><br><span class="line">  [ 9] .eh_frame         PROGBITS       <span class="number"> 0000000000000000 </span>0000b8<span class="number"> 000038 </span>00   A <span class="number"> 0 </span> <span class="number"> 0 </span> 8</span><br><span class="line">  [10] .rela.eh_frame    RELA           <span class="number"> 0000000000000000 </span>000288<span class="number"> 000018 </span>18   I<span class="number"> 11 </span> <span class="number"> 9 </span> 8</span><br><span class="line">  [11] .symtab           SYMTAB         <span class="number"> 0000000000000000 </span>0000f0<span class="number"> 000138 </span>18    <span class="number"> 12 </span><span class="number"> 10 </span> 8</span><br><span class="line">  [12] .strtab           STRTAB         <span class="number"> 0000000000000000 </span>000228<span class="number"> 000029 </span>00     <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [13] .shstrtab         STRTAB         <span class="number"> 0000000000000000 </span>0002a0<span class="number"> 000074 </span>00     <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">Key to Flags:</span><br><span class="line">  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),</span><br><span class="line">  L (link order), O (extra OS processing required), G (group), T (TLS),</span><br><span class="line">  C (compressed), x (unknown), o (OS specific), E (exclude),</span><br><span class="line">  l (large), p (processor specific)</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p><input checked disabled type="checkbox">  对 <code>hello.o</code> 反汇编，并查看 <code>hello.c</code> 的 C 程序源码和机器指令的对应关系。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objdump -S hello.o</span><br></pre></td></tr></table></figure>
+
+<p>反汇编：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">hello.o：     文件格式 elf64-x86-<span class="number">64</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Disassembly of section .text:</span><br><span class="line"></span><br><span class="line"><span class="number">0000000000000000</span> &lt;main&gt;:</span><br><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> main(void)</span><br><span class="line">&#123;</span><br><span class="line">   <span class="number">0</span>:   f3 0f <span class="number">1</span>e fa             endbr64 </span><br><span class="line">   <span class="number">4</span>:   <span class="number">55</span>                      <span class="keyword">push</span>   %rbp</span><br><span class="line">   <span class="number">5</span>:   <span class="number">48</span> <span class="number">89</span> e5                mov    %rsp,%rbp</span><br><span class="line">    <span class="keyword">printf</span>(<span class="string">&quot;hello world!\n&quot;</span>);</span><br><span class="line">   <span class="number">8</span>:   <span class="number">48</span> <span class="number">8</span>d <span class="number">3</span>d <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>    lea    <span class="number">0x0</span>(%rip),%rdi        <span class="comment"># f &lt;main+0xf&gt;</span></span><br><span class="line">   f:   e8 <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>          callq  <span class="number">14</span> &lt;main+<span class="number">0x14</span>&gt;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  <span class="number">14</span>:   b8 <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>          mov    $0<span class="keyword">x</span><span class="number">0</span>,%eax</span><br><span class="line">  <span class="number">19</span>:   <span class="number">5</span>d                      <span class="keyword">pop</span>    %rbp</span><br><span class="line">  <span class="number">1</span>a:   c3                      retq   </span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h3 id="练习3-2"><a href="#练习3-2" class="headerlink" title="练习3-2"></a>练习3-2</h3><p>如下例⼦ C 语⾔代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> global_init = <span class="number">0x11111111</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> global_const = <span class="number">0x22222222</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> static_var = <span class="number">0x33333333</span>;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> static_var_uninit;</span><br><span class="line">    <span class="keyword">int</span> auto_var = <span class="number">0x44444444</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;hello world!\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>请问编译为 .o 文件后，global_init, global_const, static_var, static_var_uninit, auto_var 这些变 量分别存放在那些 section ⾥，”hello world!\n” 这个字符串⼜在哪⾥？并尝试⽤⼯具查看并验证你的猜测。</p>
+<ul>
+<li><p>global_init ——-&gt; .data</p>
+</li>
+<li><p>global_const ——-&gt; <del>.data</del>  .rodata</p>
+</li>
+<li><p>static_var ——-&gt; .data</p>
+</li>
+<li><p>static_var_uninit ——-&gt; .bss</p>
+</li>
+<li><p>auto_var ——-&gt; <del>栈区</del> .text</p>
+<p>使用<code>objdump -s -x -d test.o</code>可以得到以下信息</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">SYMBOL</span> <span class="selector-tag">TABLE</span>:</span><br><span class="line">0000000000000000 <span class="selector-tag">l</span>    <span class="selector-tag">df</span> *<span class="selector-tag">ABS</span>*  0000000000000000 <span class="selector-tag">test</span><span class="selector-class">.c</span></span><br><span class="line">0000000000000000 <span class="selector-tag">l</span>    <span class="selector-tag">d</span>  <span class="selector-class">.text</span>  0000000000000000 <span class="selector-class">.text</span></span><br><span class="line">0000000000000000 <span class="selector-tag">l</span>    <span class="selector-tag">d</span>  <span class="selector-class">.data</span>  0000000000000000 <span class="selector-class">.data</span></span><br><span class="line">0000000000000000 <span class="selector-tag">l</span>    <span class="selector-tag">d</span>  <span class="selector-class">.bss</span>   0000000000000000 <span class="selector-class">.bss</span></span><br><span class="line">0000000000000000 <span class="selector-tag">l</span>    <span class="selector-tag">d</span>  <span class="selector-class">.rodata</span>        0000000000000000 <span class="selector-class">.rodata</span></span><br><span class="line">0000000000000000 <span class="selector-tag">l</span>     <span class="selector-tag">O</span> <span class="selector-class">.bss</span>   0000000000000004 <span class="selector-tag">static_var_uninit</span>.2318</span><br><span class="line">0000000000000004 <span class="selector-tag">l</span>     <span class="selector-tag">O</span> <span class="selector-class">.data</span>  0000000000000004 <span class="selector-tag">static_var</span>.2317</span><br><span class="line">0000000000000000 <span class="selector-tag">l</span>    <span class="selector-tag">d</span>  <span class="selector-class">.note</span><span class="selector-class">.GNU-stack</span>        0000000000000000 <span class="selector-class">.note</span><span class="selector-class">.GNU-stack</span></span><br><span class="line">0000000000000000 <span class="selector-tag">l</span>    <span class="selector-tag">d</span>  <span class="selector-class">.note</span><span class="selector-class">.gnu</span><span class="selector-class">.property</span>     0000000000000000 <span class="selector-class">.note</span><span class="selector-class">.gnu</span><span class="selector-class">.property</span></span><br><span class="line">0000000000000000 <span class="selector-tag">l</span>    <span class="selector-tag">d</span>  <span class="selector-class">.eh_frame</span>      0000000000000000 <span class="selector-class">.eh_frame</span></span><br><span class="line">0000000000000000 <span class="selector-tag">l</span>    <span class="selector-tag">d</span>  <span class="selector-class">.comment</span>       0000000000000000 <span class="selector-class">.comment</span></span><br><span class="line">0000000000000000 <span class="selector-tag">g</span>     <span class="selector-tag">O</span> <span class="selector-class">.data</span>  0000000000000004 <span class="selector-tag">global_init</span></span><br><span class="line">0000000000000000 <span class="selector-tag">g</span>     <span class="selector-tag">O</span> <span class="selector-class">.rodata</span>        0000000000000004 <span class="selector-tag">global_const</span></span><br><span class="line">0000000000000000 <span class="selector-tag">g</span>     <span class="selector-tag">F</span> <span class="selector-class">.text</span>  0000000000000022 <span class="selector-tag">main</span></span><br><span class="line">0000000000000000         *<span class="selector-tag">UND</span>*  0000000000000000 _<span class="selector-tag">GLOBAL_OFFSET_TABLE_</span></span><br><span class="line">0000000000000000         *<span class="selector-tag">UND</span>*  0000000000000000 <span class="selector-tag">puts</span></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h2 id="ch4-嵌入式开发介绍"><a href="#ch4-嵌入式开发介绍" class="headerlink" title="ch4 嵌入式开发介绍"></a>ch4 嵌入式开发介绍</h2><h3 id="练习4-1"><a href="#练习4-1" class="headerlink" title="练习4-1"></a>练习4-1</h3><p>熟悉交叉编译概念，使⽤ riscv gcc 编译代码并使⽤ binutils ⼯具对⽣成的⽬标文件和可执⾏文件（ELF 格式） 进⾏分析。具体要求如下： </p>
+<ul>
+<li><p><input checked disabled type="checkbox">  编写⼀个简单的打印”hello world!”的程序源文件<code>hello.c</code> </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;hello world!\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><input checked disabled type="checkbox">  对源文件进⾏编译，⽣成针对⽀持 rv32ima 指令集架构处理器的⽬标文件<code>hello.o</code>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">riscv64-unknown-elf-gcc -march=rv32ima -mabi=ilp32 -c hello.c</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>2022-08-13补充:</p>
+<p>Ubuntu20.04系统直接apt install搭建的环境，编译这个练习会报错:</p>
+<p>编译命令:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/riscv64-unknown-elf-gcc <span class="attribute">-march</span>=rv32ima <span class="attribute">-mabi</span>=ilp32 -c hello.c </span><br></pre></td></tr></table></figure>
+
+<p>报错：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hello.c:1:10: fatal error: stdio.h: No such file or directory</span><br><span class="line">    1 | #include &lt;stdio.h&gt;</span><br><span class="line">      |          ^~~~~~~~~</span><br><span class="line">compilation terminated.</span><br></pre></td></tr></table></figure>
+
+<p>根据仓库[issue](<a target="_blank" rel="noopener" href="https://gitee.com/unicornx/riscv-operating-system-mooc/issues/I4D6N9">stdio.h 头文件找不到 · Issue #I4D6N9 · unicornx/riscv-operating-system-mooc - Gitee.com</a>)可以知道这是工具链的问题，解决方法很简单，根据[howto-run-with-ubuntu1804_zh.md](<a target="_blank" rel="noopener" href="https://gitee.com/unicornx/riscv-operating-system-mooc/blob/main/howto-run-with-ubuntu1804_zh.md">howto-run-with-ubuntu1804_zh.md · unicornx/riscv-operating-system-mooc - 码云 - 开源中国 (gitee.com)</a>)搭建环境即可，这个应该是不挑Ubuntu版本的，我在Ubuntu20.04上已经没问题</p>
+</blockquote>
+</li>
+<li><p><input checked disabled type="checkbox">  查看<code>hello.o</code>的文件的文件头信息。 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readelf -h hello.o</span><br></pre></td></tr></table></figure>
+
+<p>信息如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">ELF 头：</span><br><span class="line">  Magic：   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00 </span><br><span class="line">  类别:                              ELF32</span><br><span class="line">  数据:                              2 补码，小端序 (little endian)</span><br><span class="line">  Version:                           1 (current)</span><br><span class="line">  OS/ABI:                            UNIX - System V</span><br><span class="line">  ABI 版本:                          0</span><br><span class="line">  类型:                              REL (可重定位文件)</span><br><span class="line">  系统架构:                          RISC-V</span><br><span class="line">  版本:                              0x1</span><br><span class="line">  入口点地址：               0x0</span><br><span class="line">  程序头起点：          0 (bytes into file)</span><br><span class="line">  <span class="keyword">Start</span> <span class="keyword">of</span> <span class="keyword">section</span> headers:          <span class="number">556</span> (<span class="keyword">bytes</span> <span class="keyword">into</span> <span class="keyword">file</span>)</span><br><span class="line">  标志：             <span class="number">0x0</span></span><br><span class="line">  <span class="keyword">Size</span> <span class="keyword">of</span> this header:               <span class="number">52</span> (<span class="keyword">bytes</span>)</span><br><span class="line">  <span class="keyword">Size</span> <span class="keyword">of</span> program headers:           <span class="number">0</span> (<span class="keyword">bytes</span>)</span><br><span class="line">  <span class="built_in">Number</span> <span class="keyword">of</span> program headers:         <span class="number">0</span></span><br><span class="line">  <span class="keyword">Size</span> <span class="keyword">of</span> <span class="keyword">section</span> headers:           <span class="number">40</span> (<span class="keyword">bytes</span>)</span><br><span class="line">  <span class="built_in">Number</span> <span class="keyword">of</span> <span class="keyword">section</span> headers:         <span class="number">11</span></span><br><span class="line">  <span class="keyword">Section</span> header <span class="keyword">string</span> <span class="keyword">table</span> <span class="keyword">index</span>: <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p><input checked disabled type="checkbox">  查看 <code>hello.o</code> 的 Section header table。 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readelf -S hello.o</span><br></pre></td></tr></table></figure>
+
+<p>信息如下：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">There are<span class="number"> 11 </span>section headers, starting at offset 0x22c:</span><br><span class="line"></span><br><span class="line">节头：</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [ 0]                   NULL           <span class="number"> 00000000 </span>000000<span class="number"> 000000 </span>00     <span class="number"> 0 </span> <span class="number"> 0 </span> 0</span><br><span class="line">  [ 1] .text             PROGBITS       <span class="number"> 00000000 </span>000034<span class="number"> 000038 </span>00  AX <span class="number"> 0 </span> <span class="number"> 0 </span> 4</span><br><span class="line">  [ 2] .rela.text        RELA           <span class="number"> 00000000 </span>000190<span class="number"> 000048 </span>0c   I <span class="number"> 8 </span> <span class="number"> 1 </span> 4</span><br><span class="line">  [ 3] .data             PROGBITS       <span class="number"> 00000000 </span>00006c<span class="number"> 000000 </span>00  WA <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [ 4] .bss              NOBITS         <span class="number"> 00000000 </span>00006c<span class="number"> 000000 </span>00  WA <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [ 5] .rodata           PROGBITS       <span class="number"> 00000000 </span>00006c 00000d<span class="number"> 00 </span>  A <span class="number"> 0 </span> <span class="number"> 0 </span> 4</span><br><span class="line">  [ 6] .comment          PROGBITS       <span class="number"> 00000000 </span>000079<span class="number"> 000029 </span>01  MS <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [ 7] .riscv.attributes RISCV_ATTRIBUTE<span class="number"> 00000000 </span>0000a2<span class="number"> 000026 </span>00     <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [ 8] .symtab           SYMTAB         <span class="number"> 00000000 </span>0000c8 0000b0<span class="number"> 10 </span>    <span class="number"> 9 </span> <span class="number"> 9 </span> 4</span><br><span class="line">  [ 9] .strtab           STRTAB         <span class="number"> 00000000 </span>000178<span class="number"> 000018 </span>00     <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">  [10] .shstrtab         STRTAB         <span class="number"> 00000000 </span>0001d8<span class="number"> 000054 </span>00     <span class="number"> 0 </span> <span class="number"> 0 </span> 1</span><br><span class="line">Key to Flags:</span><br><span class="line">  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),</span><br><span class="line">  L (link order), O (extra OS processing required), G (group), T (TLS),</span><br><span class="line">  C (compressed), x (unknown), o (OS specific), E (exclude),</span><br><span class="line">  p (processor specific)</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p><input checked disabled type="checkbox">  对<code>hello.o</code> 反汇编，并查看 hello.c 的 C 程序源码和机器指令的对应关系。</p>
+<p><strong>注意：</strong>直接使用<code>objdump</code>不行，因为不支持riscv架构。</p>
+<blockquote>
+<p>2022-08-13补充:</p>
+<p>提示如下:</p>
+<figure class="highlight vhdl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hello.o：     文件格式 elf32-little</span><br><span class="line">objdump: can<span class="symbol">&#x27;t</span> disassemble <span class="keyword">for</span> <span class="keyword">architecture</span> UNKNOWN!</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>所以使用以下命令:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">riscv64-unknown-elf-objdump -S hello.o</span><br></pre></td></tr></table></figure>
+
+<p>信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">hello.o：     文件格式 elf32-littleriscv</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Disassembly of section .text:</span><br><span class="line"></span><br><span class="line">00000000 &lt;main&gt;:</span><br><span class="line">   0:   ff010113                addi    sp,sp,-16</span><br><span class="line">   4:   00112623                sw      ra,12(sp)</span><br><span class="line">   8:   00812423                sw      s0,8(sp)</span><br><span class="line">   c:   01010413                addi    s0,sp,16</span><br><span class="line">  10:   000007b7                lui     a5,0x0</span><br><span class="line">  14:   00078513                mv      a0,a5</span><br><span class="line">  18:   00000097                auipc   ra,0x0</span><br><span class="line">  1c:   000080e7                jalr    ra # 18 &lt;main+0x18&gt;</span><br><span class="line">  20:   00000793                li      a5,0</span><br><span class="line">  24:   00078513                mv      a0,a5</span><br><span class="line">  28:   00c12083                lw      ra,12(sp)</span><br><span class="line">  2c:   00812403                lw      s0,8(sp)</span><br><span class="line">  30:   01010113                addi    sp,sp,16</span><br><span class="line">  34:   00008067                ret</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h3 id="练习4-2"><a href="#练习4-2" class="headerlink" title="练习4-2"></a>练习4-2</h3><p>基于 练习 4-1 继续熟悉 qemu/gdb 等⼯具的使⽤，具体要求如下：</p>
+<ul>
+<li><p><input checked disabled type="checkbox">  将 <code>hello.c</code> 编译成可调式版本的可执⾏程序 <code>a.out</code> </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">riscv64-unknown-elf-gcc -g -march=rv32ima -mabi=ilp32  hello.c</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><input checked disabled type="checkbox">  先执⾏ <code>qemu-riscv32</code> 运⾏ <code>a.out</code>。 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-riscv32 ./a.out</span><br></pre></td></tr></table></figure>
+
+<p>可以看到控制台输出以下内容：</p>
+<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello world!</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><input checked disabled type="checkbox">  使⽤ <code>qemu-riscv32</code> 和 gdb 调试 <code>a.out</code>。</p>
+<p>这里会用到两个终端，一个终端打开qemu并同时监听1234端口；一个终端打开gdb，连接1234端口，步骤如下：</p>
+<ul>
+<li><p>在终端1，使用<code>qemu-riscv32 -g 1234 a.out</code></p>
+</li>
+<li><p>这时在终端2，使用<code>riscv64-unknown-elf-gdb</code>直接进入gdb(不要使用默认的gdb，不支持rv32)</p>
+<ul>
+<li>随后在gdb中使用<code>set architecture riscv:rv32</code>设置架构</li>
+<li>然后设置断点(因为只有<code>hello world</code>一行代码)，<code>b hello.c:5</code></li>
+<li>最后使用<code>target remote localhost:1234</code>连接qemu</li>
+</ul>
+</li>
+<li><p>这时终端2会显示</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Remote debugging using localhost:1234</span><br><span class="line">warning: No executable has been specified and target does not support</span><br><span class="line">determining executable automatically.  Try using the &quot;file&quot; command.</span><br><span class="line">0x00010090 in ?? ()</span><br></pre></td></tr></table></figure>
+
+<p>这是因为我们设置了断点，想运行的话按<code>r</code>或者<code>c</code></p>
+</li>
+<li><p>最后在终端一可以看到<code>hello world!</code></p>
+</li>
+</ul>
+<p><img src="/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220813191251160.png" alt="image-20220813191251160"></p>
+</li>
+</ul>
+<h3 id="练习4-3"><a href="#练习4-3" class="headerlink" title="练习4-3"></a>练习4-3</h3><ul>
+<li><p><input checked disabled type="checkbox">  ⾃学 Makefile 的语法，理解在 riscv-operating-system-mooc 仓库的根⽬录下执⾏ make 会发⽣什么。</p>
+<p><a href="https://ethereal14.github.io/2022/01/26/Makefile%E5%AD%A6%E4%B9%A0/">Makefile学习</a></p>
+</li>
+</ul>
+<h2 id="ch5-RISC-V汇编语言编程"><a href="#ch5-RISC-V汇编语言编程" class="headerlink" title="ch5 RISC-V汇编语言编程"></a>ch5 RISC-V汇编语言编程</h2><h3 id="练习5-1"><a href="#练习5-1" class="headerlink" title="练习5-1"></a>练习5-1</h3><ul>
+<li><p><input checked disabled type="checkbox">  对 code/asm/sub 执⾏反汇编，查看 sub x5, x6, x7 这条汇编指令对应的机器指令的编码，并对照 RISC-V 的 specificaion ⾃⼰解析该条指令的编码。 </p>
+<ul>
+<li><p>使用<code>make hex</code>可查看二进制编码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">00000000  13 03 f0 ff 93 03 e0 ff  b3 02 73 40 6f 00 00 00  |..........s@o...|</span><br><span class="line">00000010</span><br></pre></td></tr></table></figure>
+
+<p>由于指令是<strong>四字节</strong>对齐的，所以可以知道<code>b3 02 73 40</code>是<code>sub x5,x6,x7</code>对应的16进制编码，并且是小端序，所以可以分析出该指令值为<code>0x407302b3</code>，同时可以使用<code>make code</code>进行求证</p>
+</li>
+<li><p>针对<code>0x407302b3</code>可以先转成二进制：<code>01000000-01110011-00000010-10110011</code></p>
+<p><img src="/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220820223553230.png" alt="image-20220820223553230"></p>
+<p>该图可知，指令的低7位可以确定指令类型，该指令低7位：0110011，分析得出该指令属于<code>OP</code>，<code>R-Type</code>类型</p>
+</li>
+<li><p>接下来可以查看<code>funct3</code>与<code>funct7</code>，<code>funct3</code>在12<del>14位，<code>funct7</code>在25</del>31位</p>
+<p>可以得到<code>funct3</code>为000，<code>funct7</code>为0100000</p>
+<p><img src="/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220820225734713.png" alt="image-20220820225734713"></p>
+</li>
+<li><p>opcode、funct3、funct7可以确定指令了</p>
+<p><img src="/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220820225828577.png" alt="image-20220820225828577"></p>
+</li>
+<li><p>寄存器由上图可知：rd为7<del>11，rs1为15</del>18，rs2为20~24，分析可知：rd=00101→x5；rs1=00110→x6；rs2=00111→x7</p>
+</li>
+</ul>
+</li>
+<li><p><input checked disabled type="checkbox">  现知道某条 RISC-V 的机器指令在内存中的值为 b3 05 95 00，从左往右为从低地址到⾼地址，单位为 字节，请将其翻译为对应的汇编指令。</p>
+<ul>
+<li><p>该值化为易读形式：0x009505b3，再化为二进制：00000000-10010101-00000101-10110011</p>
+</li>
+<li><p>首先分析opcode：0110011，为<code>OP</code>，<code>R-Type</code>类型</p>
+</li>
+<li><p>然后分析funct3、funct7：分别为000,0000000，结合opcode，分析得出该指令为<code>add</code>指令</p>
+</li>
+<li><p>随后分析寄存器：rd=01011→x11，rs1=01010→x10，rs2=01001→x9</p>
+</li>
+<li><p>最后该指令为：<code>add x11,x10,x9</code></p>
+</li>
+<li><p>可以写代码验证：</p>
+<p><img src="/2022/01/27/%E5%BE%AA%E5%BA%8F%E6%B8%90%E8%BF%9B%E5%AD%A6%E4%B9%A0%E5%BC%80%E5%8F%91RISCV-OS/image-20220820232154908.png" alt="image-20220820232154908"></p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="练习5-2"><a href="#练习5-2" class="headerlink" title="练习5-2"></a>练习5-2</h3><p>假设有如下这么一段C语言程序代码，尝试写一段汇编代码，达到等效的结果，并采用gdb调试查看执行结果，注意请使用寄存器来存放变量的值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">register</span> <span class="keyword">int</span> a, b, c, d, e;</span><br><span class="line">b = <span class="number">1</span>;</span><br><span class="line">c = <span class="number">2</span>;</span><br><span class="line">e = <span class="number">3</span>;</span><br><span class="line">a = b + c;</span><br><span class="line">d = a - e;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>首先定义变量使用了<code>register</code>，意为将变量保存在寄存器中，和“注意”里边的相照应</p>
+</li>
+<li><p>汇编代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">    .text</span><br><span class="line">    .global _start</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line">    li x5, 1        # b &#x3D; 1</span><br><span class="line">    li x6, 2        # c &#x3D; 2</span><br><span class="line">    li x7, 3        # e &#x3D; 3</span><br><span class="line">    add x9, x5, x6  # x9 &#x3D; x5 + x6  # a &#x3D; b + c</span><br><span class="line">    sub x10, x9, x7</span><br><span class="line">    </span><br><span class="line">stop:</span><br><span class="line">    j stop</span><br><span class="line"></span><br><span class="line">    .end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>直接<code>make &amp;&amp; make debug</code>就可以得到如下结果（gdbinit中display了x5到x11寄存器）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">stop () at test.s:19</span><br><span class="line">19          j stop</span><br><span class="line">=&gt; 0x80000014 &lt;stop+0&gt;: 6f 00 00 00     j       0x80000014 &lt;stop&gt;</span><br><span class="line">1: /z $x5 = 0x00000001</span><br><span class="line">2: /z $x6 = 0x00000002</span><br><span class="line">3: /z $x7 = 0x00000003</span><br><span class="line">4: /z $x9 = 0x00000003</span><br><span class="line">5: /z $x10 = 0x00000000</span><br><span class="line">6: /z $x11 = 0x87e00000</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h3 id="练习5-3"><a href="#练习5-3" class="headerlink" title="练习5-3"></a>练习5-3</h3><p>假设有如下这么一段C语言程序代码，尝试写一段汇编代码，达到等效的结果，并采用gdb调试查看执行结果，注意请使用寄存器来存放变量的值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">register</span> <span class="keyword">int</span> a, b, c, d, e;</span><br><span class="line">b = <span class="number">1</span>;</span><br><span class="line">c = <span class="number">2</span>;</span><br><span class="line">d = <span class="number">3</span>;</span><br><span class="line">e = <span class="number">4</span>;</span><br><span class="line">a = (b + c) - (d + e);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>本练习和<a href="#%E7%BB%83%E4%B9%A05-2">练习5-2</a>差不多，不过是运算稍复杂</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">    .text</span><br><span class="line">    .global _start</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line">    li x1, 1        # b &#x3D; 1</span><br><span class="line">    li x2, 2        # c &#x3D; 2</span><br><span class="line">    li x3, 3        # d &#x3D; 3</span><br><span class="line">    li x4, 4        # e &#x3D; 4</span><br><span class="line">    add x1, x1, x2</span><br><span class="line">    add x3, x3, x4</span><br><span class="line">    sub x5, x1, x3</span><br><span class="line"></span><br><span class="line">stop:</span><br><span class="line">    j stop</span><br><span class="line"></span><br><span class="line">    .end</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不过上述代码最后输出结果如下，x5为<code>0xfffffffc</code>，x5为-4，而负数在计算机中使用补码表示，可以计算一下它的原码：减一然后按位取反</p>
+<ul>
+<li>减一：<code>0xfffffffb</code>，二进制：<code>1111 1111 1111 1111 1111 1111 1111 1011</code></li>
+<li>取反：<code>0x00000004</code>，二进制：<code>0000 0000 0000 0000 0000 0000 0000 0100</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Breakpoint 1, stop () at test.s:23</span><br><span class="line">23          j stop</span><br><span class="line">=&gt; 0x8000001c &lt;stop+0&gt;: 6f 00 00 00     j       0x8000001c &lt;stop&gt;</span><br><span class="line">1: /z $x1 = 0x00000003</span><br><span class="line">2: /z $x2 = 0x00000002</span><br><span class="line">3: /z $x3 = 0x00000007</span><br><span class="line">4: /z $x4 = 0x00000004</span><br><span class="line">5: /z $x5 = 0xfffffffc</span><br><span class="line">6: /z $x6 = 0x00000000</span><br><span class="line">7: /z $x7 = 0x00000000</span><br><span class="line">(gdb) </span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h3 id="练习5-4"><a href="#练习5-4" class="headerlink" title="练习5-4"></a>练习5-4</h3><p>给定一个32位数<code>0x87654321</code>，先编写c程序，将其低16位(<code>0x4321</code>)和高16位(<code>0x8765</code>)分别分离出来保存到独立变量中；完成后在尝试采用汇编语言实现类似效果</p>
+<blockquote>
+<p>通过逻辑左右移就可以了</p>
+</blockquote>
+<ul>
+<li><p>C语言</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> i = <span class="number">0x87654321</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> high = i &gt;&gt; <span class="number">16</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> low = (i &lt;&lt; <span class="number">16</span>)&gt;&gt;<span class="number">16</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;i    = 0x%x\n&quot;</span></span><br><span class="line">           <span class="string">&quot;high = 0x%x\n&quot;</span></span><br><span class="line">           <span class="string">&quot;low  = 0x%x\n&quot;</span>, i, high, low);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    foo();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>RISC-V汇编</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># exercise 5-4</span><br><span class="line"></span><br><span class="line">    .text</span><br><span class="line">    .global _start</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line">    li x1, 0x87654321</span><br><span class="line">    srli x2, x1, 16</span><br><span class="line">    slli x3, x1, 16</span><br><span class="line">    srli x3, x3, 16</span><br><span class="line">    </span><br><span class="line">stop:</span><br><span class="line">    j stop</span><br><span class="line"></span><br><span class="line">    .end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<h3 id="练习7-1"><a href="#练习7-1" class="headerlink" title="练习7-1"></a>练习7-1</h3><p>要求：完全采用汇编语言重写01-helloRVOS, 运行后在控制台打印输出”Hello, RVOS!”</p>
+<ul>
+<li><strong>字符数组这儿，即代码中的<code>.data</code>后边的内容放在目前位置没问题，先前放在<code>_start</code>前边就G了，具体原因待排查</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line">#include &quot;platform.h&quot;</span><br><span class="line">.data</span><br><span class="line">    array:</span><br><span class="line">        .byte &#39;H&#39;, &#39;e&#39;, &#39;l&#39;, &#39;l&#39;, &#39;o&#39;, &#39;,&#39;, &#39;R&#39;, &#39;V&#39;, &#39;O&#39;, &#39;S&#39;, &#39;!&#39;, 0</span><br><span class="line">        .space 12</span><br><span class="line">    # size of each hart&#39;s stack is 1024 bytes</span><br><span class="line">    .equ    STACK_SIZE, 1024</span><br><span class="line">    .global _start</span><br><span class="line"></span><br><span class="line">    .text</span><br><span class="line"></span><br><span class="line">    .macro uart_read_reg reg1, reg2</span><br><span class="line">        lb \reg1, 0(\reg2)</span><br><span class="line">    .endm</span><br><span class="line"></span><br><span class="line">    .macro uart_write_reg reg1, v</span><br><span class="line">        sb \v, 0(\reg1)</span><br><span class="line">    .endm</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line">    csrr t0, mhartid    # 读Hart id</span><br><span class="line">    mv tp, t0</span><br><span class="line">    bnez   t0, park</span><br><span class="line"></span><br><span class="line">    slli t0, t0, 10     #t0 向左移动10位, 1024</span><br><span class="line">    la sp, stacks + STACK_SIZE</span><br><span class="line"></span><br><span class="line">    add sp, sp, t0; #  把sp移动到Hart对应的栈的栈顶位置上</span><br><span class="line"></span><br><span class="line">    li s0, 0x10000000</span><br><span class="line"></span><br><span class="line">    j start_kernel</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">park:</span><br><span class="line">    wfi</span><br><span class="line">    j park</span><br><span class="line"></span><br><span class="line">stacks:</span><br><span class="line">    .skip STACK_SIZE * MAXNUM_CPU</span><br><span class="line"></span><br><span class="line">start_kernel:</span><br><span class="line">    # prologue</span><br><span class="line">    addi sp, sp, -8; # sp &#x3D; sp + -8</span><br><span class="line">    sw ra, 0(sp) # </span><br><span class="line"></span><br><span class="line">    call uart_init</span><br><span class="line"></span><br><span class="line">    la a0, array</span><br><span class="line"></span><br><span class="line">    call uart_puts</span><br><span class="line"></span><br><span class="line">uart_init:</span><br><span class="line">    addi sp, sp, -20</span><br><span class="line"></span><br><span class="line">    addi s1, s0, 0x01</span><br><span class="line">    uart_write_reg s1, zero # uart_write_reg(IER, 0x00);</span><br><span class="line">                            # sb \v, 0(\reg1)</span><br><span class="line"></span><br><span class="line">    addi s1, s0, 0x03            # uint8_t lcr &#x3D; uart_read_reg(LCR);</span><br><span class="line">    uart_read_reg s2, s1    # lb \reg1, 0(\reg2)</span><br><span class="line"></span><br><span class="line">    slli s2, s2, 7          # uart_write_reg(LCR, lcr | (1 &lt;&lt; 7));</span><br><span class="line">    uart_write_reg s1, s2   </span><br><span class="line"></span><br><span class="line">    li s2, 0x03             # uart_write_reg(DLL, 0x03);</span><br><span class="line">    uart_write_reg s0, s2 </span><br><span class="line"></span><br><span class="line">    addi s1, s0, 0x01       # uart_write_reg(DLM, 0x00);</span><br><span class="line">    li s2, 0x00</span><br><span class="line">    uart_write_reg s1, s2</span><br><span class="line">    </span><br><span class="line">    addi s1, s0, 0x03       # uart_write_reg(LCR, lcr | (3 &lt;&lt; 0));</span><br><span class="line">    li s2, 0x03</span><br><span class="line">    uart_write_reg s1, s2</span><br><span class="line"></span><br><span class="line">    addi sp, sp, 20</span><br><span class="line">    ret</span><br><span class="line"></span><br><span class="line">uart_puts:</span><br><span class="line">    addi sp, sp, -12; # sp &#x3D; sp + -12</span><br><span class="line">    sw s1, 0(sp)</span><br><span class="line">    sw s2, 4(sp)</span><br><span class="line">    sw ra, 8(sp)</span><br><span class="line"></span><br><span class="line">    mv s1, a0</span><br><span class="line">loop:</span><br><span class="line">    lbu a0, 0(s1)</span><br><span class="line">    mv s2, a0</span><br><span class="line">    addi s1, s1, 1; # a0 &#x3D; a0 + 1</span><br><span class="line">    jal uart_putc  # jump to uart_puts and save position to ra</span><br><span class="line">    bnez s2, loop</span><br><span class="line"></span><br><span class="line">    lw s1, 0(sp) # </span><br><span class="line">    lw s2, 4(sp) # </span><br><span class="line">    lw ra, 8(sp) # </span><br><span class="line">    addi sp, sp, 12; # sp &#x3D; sp + 12</span><br><span class="line">    ret</span><br><span class="line"></span><br><span class="line">uart_putc:</span><br><span class="line">    addi sp, sp, -8; # sp &#x3D; sp + -8</span><br><span class="line">    sw s1, 0(sp)</span><br><span class="line">    sw s2, 4(sp) # </span><br><span class="line">    </span><br><span class="line">    addi s1, s0, 5; # s1 &#x3D; s0 + 5</span><br><span class="line">    uart_read_reg s2, s1</span><br><span class="line">check:</span><br><span class="line">    andi s2, s2, 32; # s2 &#x3D; s2 &amp; 32</span><br><span class="line">    beqz s2, check</span><br><span class="line"></span><br><span class="line">    uart_write_reg s0, a0 </span><br><span class="line"></span><br><span class="line">    lw s1, 0(sp) # </span><br><span class="line">    lw s2, 4(sp) # </span><br><span class="line">    addi sp, sp, 8; # sp &#x3D; sp + 8</span><br><span class="line">    ret</span><br><span class="line"></span><br><span class="line">    .end</span><br></pre></td></tr></table></figure>
+
+<h3 id="练习7-2"><a href="#练习7-2" class="headerlink" title="练习7-2"></a>练习7-2</h3><p>要求：参考01-helloRVOS，在此基础上采用轮询方式读取控制台上输入的字符并回显在控制台上。另外用户按下回车后能够另起一行从头开始</p>
+<blockquote>
+<p>为节省篇幅，只记录修改部分</p>
+</blockquote>
+<ul>
+<li>纯单片机编辑，读写寄存器就完事。</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* kernel.c */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;platform.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">uart_init</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">uart_puts</span><span class="params">(<span class="keyword">char</span> *s)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">uart_putc</span><span class="params">(<span class="keyword">char</span> ch)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">char</span> <span class="title">uart_getc</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">start_kernel</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    uart_init();</span><br><span class="line">    uart_puts(<span class="string">&quot;hello, RVOS!\n&quot;</span>);</span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">uint8_t</span> ch = uart_getc();</span><br><span class="line">        <span class="keyword">if</span> (ch == <span class="string">&#x27;\r&#x27;</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            uart_puts(<span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        uart_putc(ch);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* uart.c */</span></span><br><span class="line"><span class="function"><span class="keyword">char</span> <span class="title">uart_getc</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span> ((uart_read_reg(LSR) &amp; LSR_RX_READY) == <span class="number">0</span>)&#123;&#125;</span><br><span class="line">    <span class="keyword">return</span> uart_read_reg(RHR);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+	<div>
+		
+			<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------THE END-------------</div>
+    
+</div>
+
+		
+	</div>
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/wechat_channel.jpg">
+            <span class="icon">
+              <i class="fab fa-weixin"></i>
+            </span>
+
+            <span class="label">WeChat</span>
+          </a>
+        </div>
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/26/Makefile%E5%AD%A6%E4%B9%A0/" rel="prev" title="Makefile学习">
+      <i class="fa fa-chevron-left"></i> Makefile学习
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%94%E8%AE%B0"><span class="nav-number">1.</span> <span class="nav-text">笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%9C%AF%E8%BF%90%E7%AE%97%E6%8C%87%E4%BB%A4"><span class="nav-number">1.1.</span> <span class="nav-text">算术运算指令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ADD"><span class="nav-number">1.1.1.</span> <span class="nav-text">ADD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SUB"><span class="nav-number">1.1.2.</span> <span class="nav-text">SUB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ADDI"><span class="nav-number">1.1.3.</span> <span class="nav-text">ADDI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%AE%97%E6%9C%AF%E8%BF%90%E7%AE%97%E6%8C%87%E4%BB%A4%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%85%B6%E4%BB%96%E4%BC%AA%E6%8C%87%E4%BB%A4"><span class="nav-number">1.1.4.</span> <span class="nav-text">基于算术运算指令实现的其他伪指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LUI-Lod-Upper-Immediate"><span class="nav-number">1.1.5.</span> <span class="nav-text">LUI(Lod Upper Immediate)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LI"><span class="nav-number">1.1.6.</span> <span class="nav-text">LI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AUIPC"><span class="nav-number">1.1.7.</span> <span class="nav-text">AUIPC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LA-Load-Address"><span class="nav-number">1.1.8.</span> <span class="nav-text">LA(Load Address)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E6%8C%87%E4%BB%A4"><span class="nav-number">1.2.</span> <span class="nav-text">逻辑运算指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E4%BD%8D%E8%BF%90%E7%AE%97%E6%8C%87%E4%BB%A4"><span class="nav-number">1.3.</span> <span class="nav-text">移位运算指令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E7%A7%BB%E4%BD%8D"><span class="nav-number">1.3.1.</span> <span class="nav-text">逻辑移位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%9C%AF%E7%A7%BB%E4%BD%8D"><span class="nav-number">1.3.2.</span> <span class="nav-text">算术移位</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E8%AF%BB%E5%86%99%E6%8C%87%E4%BB%A4"><span class="nav-number">1.4.</span> <span class="nav-text">内存读写指令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E8%AF%BB%EF%BC%88Load%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">内存读（Load）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#exercises"><span class="nav-number">2.</span> <span class="nav-text">exercises</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ch3-%E7%BC%96%E8%AF%91%E4%B8%8E%E9%93%BE%E6%8E%A5"><span class="nav-number">2.1.</span> <span class="nav-text">ch3 编译与链接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A03-1"><span class="nav-number">2.1.1.</span> <span class="nav-text">练习3-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A03-2"><span class="nav-number">2.1.2.</span> <span class="nav-text">练习3-2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ch4-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.2.</span> <span class="nav-text">ch4 嵌入式开发介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A04-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">练习4-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A04-2"><span class="nav-number">2.2.2.</span> <span class="nav-text">练习4-2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A04-3"><span class="nav-number">2.2.3.</span> <span class="nav-text">练习4-3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ch5-RISC-V%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E7%BC%96%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">ch5 RISC-V汇编语言编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A05-1"><span class="nav-number">2.3.1.</span> <span class="nav-text">练习5-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A05-2"><span class="nav-number">2.3.2.</span> <span class="nav-text">练习5-2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A05-3"><span class="nav-number">2.3.3.</span> <span class="nav-text">练习5-3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A05-4"><span class="nav-number">2.3.4.</span> <span class="nav-text">练习5-4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A07-1"><span class="nav-number">2.3.5.</span> <span class="nav-text">练习7-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A07-2"><span class="nav-number">2.3.6.</span> <span class="nav-text">练习7-2</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MiengGiet"
+      src="/images/bh3.jpg">
+  <p class="site-author-name" itemprop="name">MiengGiet</p>
+  <div class="site-description" itemprop="description">摸鱼</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ethereal14" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ethereal14" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1097282916@qq.com" title="E-Mail → mailto:1097282916@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MiengGiet</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">92k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:24</span>
+</div>
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共30.4k字</span>
+</div>
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<script type="text/javascript" src="/js/clicklove.js"></script>
+<!-- 动态背景 -->
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+

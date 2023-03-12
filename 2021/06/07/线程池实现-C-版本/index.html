@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ethereal14.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="学习了c++，把线程池改成c++试试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线程池实现-C++版本">
+<meta property="og:url" content="https://ethereal14.github.io/2021/06/07/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%AE%9E%E7%8E%B0-C-%E7%89%88%E6%9C%AC/index.html">
+<meta property="og:site_name" content="MiengGiet Blog">
+<meta property="og:description" content="学习了c++，把线程池改成c++试试">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ethereal14.github.io/2021/06/07/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%AE%9E%E7%8E%B0-C-%E7%89%88%E6%9C%AC/image-20210607203945887.png">
+<meta property="article:published_time" content="2021-06-07T12:12:03.000Z">
+<meta property="article:modified_time" content="2023-03-12T16:03:10.205Z">
+<meta property="article:author" content="MiengGiet">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ethereal14.github.io/2021/06/07/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%AE%9E%E7%8E%B0-C-%E7%89%88%E6%9C%AC/image-20210607203945887.png">
+
+<link rel="canonical" href="https://ethereal14.github.io/2021/06/07/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%AE%9E%E7%8E%B0-C-%E7%89%88%E6%9C%AC/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>线程池实现-C++版本 | MiengGiet Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="MiengGiet Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MiengGiet Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">学习记录</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ethereal14.github.io/2021/06/07/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%AE%9E%E7%8E%B0-C-%E7%89%88%E6%9C%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/bh3.jpg">
+      <meta itemprop="name" content="MiengGiet">
+      <meta itemprop="description" content="摸鱼">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MiengGiet Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+		  线程池实现-C++版本
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-07 20:12:03" itemprop="dateCreated datePublished" datetime="2021-06-07T20:12:03+08:00">2021-06-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-13 00:03:10" itemprop="dateModified" datetime="2023-03-13T00:03:10+08:00">2023-03-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+            <div class="post-description">学习了c++，把线程池改成c++试试</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h1><p>C++版本的线程池是根据C语言版本修改来的，为了熟悉一下C++的相关语法，所以就有了这篇笔记。记录一下修改的过程中遇到的问题。</p>
+<p>本线程池是<strong>基于对象</strong>的，并不是<strong>面向对象</strong>。</p>
+<p>[线程池简单实现(基于C语言)](<a href="https://ethereal14.github.io/2021/04/11/Linux-C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0/">Linux C线程池简单实现 | Blog (ethereal14.github.io)</a>)</p>
+<ul>
+<li><input disabled type="checkbox"> 也不知道会不会有内存泄露的问题，这些事以后再说</li>
+</ul>
+<h1 id="文件说明"><a href="#文件说明" class="headerlink" title="文件说明"></a>文件说明</h1><table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>threadpool.cpp</td>
+<td>线程池成员函数具体实现</td>
+</tr>
+<tr>
+<td>threadpool.h</td>
+<td>线程池对象的定义、各种枚举类型</td>
+</tr>
+<tr>
+<td>main.cpp</td>
+<td>测试用例</td>
+</tr>
+<tr>
+<td>CMakeLists.txt</td>
+<td>使用cmake组织的工程</td>
+</tr>
+</tbody></table>
+<h1 id="线程池对象设计"><a href="#线程池对象设计" class="headerlink" title="线程池对象设计"></a>线程池对象设计</h1><p>基本就是把原来的结构体改成现在的class，把变量定义在private里。把工作线程定义为静态成员函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">threadpool</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">pthread_mutex_t</span> m_lock;</span><br><span class="line">    <span class="keyword">pthread_cond_t</span> m_notify;</span><br><span class="line">    <span class="keyword">pthread_t</span> *m_threads;</span><br><span class="line">    threadpool_task *m_queue;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> m_thread_count;</span><br><span class="line">    <span class="keyword">int</span> m_queue_size;</span><br><span class="line">    <span class="keyword">int</span> m_head;</span><br><span class="line">    <span class="keyword">int</span> m_tail;</span><br><span class="line">    <span class="keyword">int</span> m_count;</span><br><span class="line">    <span class="keyword">int</span> m_shutdown;</span><br><span class="line">    <span class="keyword">int</span> m_started;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> *<span class="title">threadpool_thread</span><span class="params">(<span class="keyword">void</span> *arg)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    threadpool(<span class="keyword">int</span> thread_count, <span class="keyword">int</span> queue_size, <span class="keyword">int</span> flags);</span><br><span class="line">    ~threadpool();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">threadpool_add</span><span class="params">(threadpool *pool, <span class="keyword">void</span> (*function)(<span class="keyword">void</span> *), <span class="keyword">void</span> *argument, <span class="keyword">int</span> flag)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">threadpoolexit</span><span class="params">(threadpool *pool, <span class="keyword">int</span> flag)</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="任务队列对象"><a href="#任务队列对象" class="headerlink" title="任务队列对象"></a>任务队列对象</h1><p>如上，仅仅把struct改为class</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">threadpool_task</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">void</span> (*function)(<span class="keyword">void</span> *);</span><br><span class="line">    <span class="keyword">void</span> *argument;</span><br><span class="line">    threadpool_task();</span><br><span class="line">    ~threadpool_task();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="各种枚举类型"><a href="#各种枚举类型" class="headerlink" title="各种枚举类型"></a>各种枚举类型</h1><ul>
+<li><input disabled type="checkbox"> 不知道能不能把这些枚举类型放在class里边，以后有空研究</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">enum</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    threadpool_invalid = <span class="number">-1</span>,</span><br><span class="line">    threadpool_lock_failure = <span class="number">-2</span>,</span><br><span class="line">    threadpool_queue_full = <span class="number">-3</span>,</span><br><span class="line">    threadpool_shutdown = <span class="number">-4</span>,</span><br><span class="line">    threadpool_thread_failure = <span class="number">-5</span></span><br><span class="line">&#125; <span class="keyword">threadpool_terror_t</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">enum</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    immediate_shutdown = <span class="number">1</span>, <span class="comment">//自动关闭</span></span><br><span class="line">    graceful_shutdown = <span class="number">2</span>   <span class="comment">//立即关闭</span></span><br><span class="line">&#125; <span class="keyword">threadpool_shutdown_t</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">enum</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    threadpool_graceful = <span class="number">1</span></span><br><span class="line">&#125; <span class="keyword">threadpool_destroy_flags_t</span>;</span><br></pre></td></tr></table></figure>
+
+<h1 id="线程池构造函数"><a href="#线程池构造函数" class="headerlink" title="线程池构造函数"></a>线程池构造函数</h1><ul>
+<li>这里遇到个问题：构造函数是没有返回值的，所以不能把原来的创建线程池函数照搬过来。<ul>
+<li>使用do while结构来进行构造</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">threadpool::threadpool(<span class="keyword">int</span> thread_count = <span class="number">32</span>, <span class="keyword">int</span> queue_size = <span class="number">256</span>, <span class="keyword">int</span> flags = <span class="number">0</span>) : m_queue_size(queue_size)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (thread_count &lt;= <span class="number">0</span> || thread_count &gt; MAX_THREADS || queue_size &lt;= <span class="number">0</span> || queue_size &gt; MAX_QUEUE)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;argument eeror&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>-&gt;m_thread_count = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//this-&gt;m_queue_size = queue_size;</span></span><br><span class="line">        <span class="keyword">this</span>-&gt;m_head = <span class="keyword">this</span>-&gt;m_tail = <span class="keyword">this</span>-&gt;m_count = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">this</span>-&gt;m_shutdown = <span class="keyword">this</span>-&gt;m_started = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>-&gt;m_threads = <span class="keyword">new</span> <span class="keyword">pthread_t</span>[thread_count];</span><br><span class="line">        <span class="keyword">this</span>-&gt;m_queue = <span class="keyword">new</span> threadpool_task[queue_size];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ((pthread_mutex_init(&amp;<span class="keyword">this</span>-&gt;m_lock, <span class="literal">nullptr</span>) != <span class="number">0</span>) ||</span><br><span class="line">            (pthread_cond_init(&amp;<span class="keyword">this</span>-&gt;m_notify, <span class="literal">NULL</span>) != <span class="number">0</span>) ||</span><br><span class="line">            (<span class="keyword">this</span>-&gt;m_threads == <span class="literal">nullptr</span>) || (<span class="keyword">this</span>-&gt;m_queue == <span class="literal">nullptr</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;init eeror&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; thread_count; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (pthread_create(&amp;<span class="keyword">this</span>-&gt;m_threads[i], <span class="literal">nullptr</span>, threadpool_thread, <span class="keyword">this</span>) != <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;create &quot;</span> &lt;&lt; i &lt;&lt; <span class="string">&quot; thread error&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">this</span>-&gt;m_thread_count++;</span><br><span class="line">            <span class="keyword">this</span>-&gt;m_started++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">while</span> (<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="线程池析构函数"><a href="#线程池析构函数" class="headerlink" title="线程池析构函数"></a>线程池析构函数</h1><p>析构函数把一些资源释放了就行</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">threadpool::~threadpool()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span> == <span class="literal">NULL</span> || <span class="keyword">this</span>-&gt;m_started &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>-&gt;m_threads)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">delete</span>[] <span class="keyword">this</span>-&gt;m_threads;</span><br><span class="line">        <span class="keyword">delete</span>[] <span class="keyword">this</span>-&gt;m_queue;</span><br><span class="line"></span><br><span class="line">        pthread_mutex_lock(&amp;(<span class="keyword">this</span>-&gt;m_lock));</span><br><span class="line">        pthread_mutex_destroy(&amp;(<span class="keyword">this</span>-&gt;m_lock));</span><br><span class="line">        pthread_cond_destroy(&amp;(<span class="keyword">this</span>-&gt;m_notify));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//delete[] this;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>以下函数基本没啥变化</strong></p>
+<h1 id="添加任务函数"><a href="#添加任务函数" class="headerlink" title="添加任务函数"></a>添加任务函数</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">threadpool::threadpool_add</span><span class="params">(threadpool *pool, <span class="keyword">void</span> (*function)(<span class="keyword">void</span> *), <span class="keyword">void</span> *argument, <span class="keyword">int</span> flag)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> err = <span class="number">0</span>, next;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pool == <span class="literal">nullptr</span> || function == <span class="literal">nullptr</span>)</span><br><span class="line">        <span class="keyword">return</span> threadpool_invalid;</span><br><span class="line">    <span class="keyword">if</span> (pthread_mutex_lock(&amp;(pool-&gt;m_lock)) != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> threadpool_lock_failure;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    next = pool-&gt;m_tail + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    next = (next == pool-&gt;m_queue_size) ? <span class="number">0</span> : next;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (pool-&gt;m_count == pool-&gt;m_queue_size)</span><br><span class="line">        &#123;</span><br><span class="line">            err = threadpool_queue_full;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        pool-&gt;m_queue[pool-&gt;m_tail].function = function;</span><br><span class="line">        pool-&gt;m_queue[pool-&gt;m_tail].argument = argument;</span><br><span class="line"></span><br><span class="line">        pool-&gt;m_tail = next;</span><br><span class="line">        pool-&gt;m_count++;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (pthread_cond_signal(&amp;(pool-&gt;m_notify)) != <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            err = threadpool_lock_failure;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">while</span> (<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pthread_mutex_unlock(&amp;(pool-&gt;m_lock)) != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        err = threadpool_lock_failure;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="线程退出函数"><a href="#线程退出函数" class="headerlink" title="线程退出函数"></a>线程退出函数</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">threadpool::threadpoolexit</span><span class="params">(threadpool *pool, <span class="keyword">int</span> flag)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i, err = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pool == <span class="literal">nullptr</span>)</span><br><span class="line">        <span class="keyword">return</span> threadpool_invalid;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pthread_mutex_lock(&amp;(pool-&gt;m_lock)) != <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> threadpool_lock_failure;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (pool-&gt;m_shutdown)</span><br><span class="line">        &#123;</span><br><span class="line">            err = threadpool_shutdown;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        pool-&gt;m_shutdown = (flag &amp; threadpool_graceful) ? graceful_shutdown : immediate_shutdown;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ((pthread_cond_broadcast(&amp;(pool-&gt;m_notify)) != <span class="number">0</span>) || (pthread_mutex_unlock(&amp;(pool-&gt;m_lock)) != <span class="number">0</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            err = threadpool_lock_failure;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; pool-&gt;m_thread_count; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (pthread_join(pool-&gt;m_threads[i], <span class="literal">nullptr</span>) != <span class="number">0</span>)</span><br><span class="line">                err = threadpool_thread_failure;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">while</span> (<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="工作线程函数"><a href="#工作线程函数" class="headerlink" title="工作线程函数"></a>工作线程函数</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">threadpool::threadpool_thread</span><span class="params">(<span class="keyword">void</span> *arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    threadpool *pool = <span class="keyword">static_cast</span>&lt;threadpool *&gt;(arg);</span><br><span class="line">    threadpool_task task;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (;;)</span><br><span class="line">    &#123;</span><br><span class="line">        pthread_mutex_lock(&amp;(pool-&gt;m_lock));</span><br><span class="line">        <span class="keyword">while</span> ((pool-&gt;m_count == <span class="number">0</span>) &amp;&amp; (!pool-&gt;m_shutdown))</span><br><span class="line">        &#123;</span><br><span class="line">            pthread_cond_wait(&amp;(pool-&gt;m_notify), &amp;(pool-&gt;m_lock));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ((pool-&gt;m_shutdown == immediate_shutdown) || ((pool-&gt;m_shutdown == graceful_shutdown) &amp;&amp; (pool-&gt;m_count == <span class="number">0</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        task.function = pool-&gt;m_queue[pool-&gt;m_head].function;</span><br><span class="line">        task.argument = pool-&gt;m_queue[pool-&gt;m_head].argument;</span><br><span class="line"></span><br><span class="line">        pool-&gt;m_head++;</span><br><span class="line">        pool-&gt;m_head = (pool-&gt;m_head == pool-&gt;m_queue_size) ? <span class="number">0</span> : pool-&gt;m_head;</span><br><span class="line">        pool-&gt;m_count--;</span><br><span class="line"></span><br><span class="line">        pthread_mutex_unlock(&amp;(pool-&gt;m_lock));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (*(task.function))(task.argument);</span></span><br><span class="line"></span><br><span class="line">        task.function(task.argument);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pool-&gt;m_started--;</span><br><span class="line">    pthread_mutex_unlock(&amp;(pool-&gt;m_lock));</span><br><span class="line">    pthread_exit(<span class="literal">nullptr</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="最后的测试用例"><a href="#最后的测试用例" class="headerlink" title="最后的测试用例"></a>最后的测试用例</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;threadpool.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> THREAD 32</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> QUEUE 256</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> tasks = <span class="number">0</span>, done = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">pthread_mutex_t</span> lock;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dumy_task</span><span class="params">(<span class="keyword">void</span> *arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    usleep(<span class="number">10000</span>);</span><br><span class="line">    pthread_mutex_lock(&amp;lock);</span><br><span class="line"></span><br><span class="line">    done++;</span><br><span class="line">    pthread_mutex_unlock(&amp;lock);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">char</span> **)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    threadpool *pool = <span class="keyword">new</span> threadpool(THREAD, QUEUE, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    pthread_mutex_init(&amp;lock, <span class="literal">nullptr</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;pool started with &quot;</span> &lt;&lt; THREAD &lt;&lt; <span class="string">&quot; threads and queue size of &quot;</span> &lt;&lt; QUEUE &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> ((pool-&gt;threadpool_add(pool, &amp;dumy_task, <span class="literal">nullptr</span>, <span class="number">0</span>)) == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        pthread_mutex_lock(&amp;lock);</span><br><span class="line">        tasks++;</span><br><span class="line">        pthread_mutex_unlock(&amp;lock);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;add &quot;</span> &lt;&lt; tasks &lt;&lt; <span class="string">&quot; tasks&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> ((tasks / <span class="number">2</span>) &gt; done)</span><br><span class="line">    &#123;</span><br><span class="line">        usleep(<span class="number">10000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//pool-&gt;threadpoolexit(pool, 0) == 0;</span></span><br><span class="line">    assert(pool-&gt;threadpoolexit(pool, <span class="number">0</span>) == <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;did &quot;</span> &lt;&lt; done &lt;&lt; <span class="string">&quot; tasks&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">delete</span>[] pool;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="CMakeLists文件"><a href="#CMakeLists文件" class="headerlink" title="CMakeLists文件"></a>CMakeLists文件</h1><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.0</span>.<span class="number">0</span>)</span><br><span class="line"><span class="keyword">project</span>(threadpool_cpp VERSION <span class="number">0.1</span>.<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span>(CTest)</span><br><span class="line"><span class="keyword">enable_testing</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_executable</span>(threadpool_cpp main.cpp threadpool.cpp threadpool.h)</span><br><span class="line"></span><br><span class="line"><span class="keyword">find_package</span>(Threads)</span><br><span class="line"><span class="keyword">target_link_libraries</span>(threadpool_cpp <span class="variable">$&#123;CMAKE_THREAD_LIBS_INIT&#125;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CPACK_PROJECT_NAME <span class="variable">$&#123;PROJECT_NAME&#125;</span>)</span><br><span class="line"><span class="keyword">set</span>(CPACK_PROJECT_VERSION <span class="variable">$&#123;PROJECT_VERSION&#125;</span>)</span><br><span class="line"><span class="keyword">include</span>(CPack)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="测试效果图"><a href="#测试效果图" class="headerlink" title="测试效果图"></a>测试效果图</h1><p><img src="/2021/06/07/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%AE%9E%E7%8E%B0-C-%E7%89%88%E6%9C%AC/image-20210607203945887.png" alt="image-20210607203945887"></p>
+
+    </div>
+
+    
+    
+    
+	<div>
+		
+			<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------THE END-------------</div>
+    
+</div>
+
+		
+	</div>
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/wechat_channel.jpg">
+            <span class="icon">
+              <i class="fab fa-weixin"></i>
+            </span>
+
+            <span class="label">WeChat</span>
+          </a>
+        </div>
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/20/Linux%E9%AB%98%E6%80%A7%E8%83%BD%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BC%96%E7%A8%8B/" rel="prev" title="Linux高性能服务器编程">
+      <i class="fa fa-chevron-left"></i> Linux高性能服务器编程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/07/RT-Thread-Mqtt-Modbus%E7%BA%BF%E4%B8%8B%E5%9F%B9%E8%AE%AD/" rel="next" title="RT-Thread_Mqtt_Modbus线下培训">
+      RT-Thread_Mqtt_Modbus线下培训 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B"><span class="nav-number">1.</span> <span class="nav-text">开始</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E8%AF%B4%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">文件说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">线程池对象设计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97%E5%AF%B9%E8%B1%A1"><span class="nav-number">4.</span> <span class="nav-text">任务队列对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%84%E7%A7%8D%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B"><span class="nav-number">5.</span> <span class="nav-text">各种枚举类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">6.</span> <span class="nav-text">线程池构造函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="nav-number">7.</span> <span class="nav-text">线程池析构函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E4%BB%BB%E5%8A%A1%E5%87%BD%E6%95%B0"><span class="nav-number">8.</span> <span class="nav-text">添加任务函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E9%80%80%E5%87%BA%E5%87%BD%E6%95%B0"><span class="nav-number">9.</span> <span class="nav-text">线程退出函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E7%BA%BF%E7%A8%8B%E5%87%BD%E6%95%B0"><span class="nav-number">10.</span> <span class="nav-text">工作线程函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E7%9A%84%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B"><span class="nav-number">11.</span> <span class="nav-text">最后的测试用例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMakeLists%E6%96%87%E4%BB%B6"><span class="nav-number">12.</span> <span class="nav-text">CMakeLists文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%95%88%E6%9E%9C%E5%9B%BE"><span class="nav-number">13.</span> <span class="nav-text">测试效果图</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MiengGiet"
+      src="/images/bh3.jpg">
+  <p class="site-author-name" itemprop="name">MiengGiet</p>
+  <div class="site-description" itemprop="description">摸鱼</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ethereal14" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ethereal14" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1097282916@qq.com" title="E-Mail → mailto:1097282916@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MiengGiet</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">92k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:24</span>
+</div>
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共30.4k字</span>
+</div>
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<script type="text/javascript" src="/js/clicklove.js"></script>
+<!-- 动态背景 -->
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+

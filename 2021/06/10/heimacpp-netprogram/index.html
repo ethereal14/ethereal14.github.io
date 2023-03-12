@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ethereal14.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="黑马的网络编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="黑马C++网络编程">
+<meta property="og:url" content="https://ethereal14.github.io/2021/06/10/heimacpp-netprogram/index.html">
+<meta property="og:site_name" content="MiengGiet Blog">
+<meta property="og:description" content="黑马的网络编程">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ethereal14.github.io/2021/06/10/heimacpp-netprogram/image-20210610212135741.png">
+<meta property="og:image" content="https://ethereal14.github.io/2021/06/10/heimacpp-netprogram/image-20210610213342655.png">
+<meta property="og:image" content="https://ethereal14.github.io/2021/06/10/heimacpp-netprogram/image-20210610213819187.png">
+<meta property="og:image" content="https://ethereal14.github.io/2021/06/10/heimacpp-netprogram/image-20210613142506250.png">
+<meta property="og:image" content="https://ethereal14.github.io/2021/06/10/heimacpp-netprogram/image-20210613152316871.png">
+<meta property="og:image" content="https://ethereal14.github.io/2021/06/10/heimacpp-netprogram/image-20210629165910770.png">
+<meta property="article:published_time" content="2021-06-10T13:14:09.000Z">
+<meta property="article:modified_time" content="2023-03-12T16:03:10.201Z">
+<meta property="article:author" content="MiengGiet">
+<meta property="article:tag" content="Linux网络编程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ethereal14.github.io/2021/06/10/heimacpp-netprogram/image-20210610212135741.png">
+
+<link rel="canonical" href="https://ethereal14.github.io/2021/06/10/heimacpp-netprogram/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>黑马C++网络编程 | MiengGiet Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="MiengGiet Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MiengGiet Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">学习记录</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ethereal14.github.io/2021/06/10/heimacpp-netprogram/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/bh3.jpg">
+      <meta itemprop="name" content="MiengGiet">
+      <meta itemprop="description" content="摸鱼">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MiengGiet Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+		  黑马C++网络编程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-10 21:14:09" itemprop="dateCreated datePublished" datetime="2021-06-10T21:14:09+08:00">2021-06-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-13 00:03:10" itemprop="dateModified" datetime="2023-03-13T00:03:10+08:00">2023-03-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">视频笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+            <div class="post-description">黑马的网络编程</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="OSI七层模型-TCP-IP模型"><a href="#OSI七层模型-TCP-IP模型" class="headerlink" title="OSI七层模型-TCP/IP模型"></a>OSI七层模型-TCP/IP模型</h1><p><img src="/2021/06/10/heimacpp-netprogram/image-20210610212135741.png" alt="image-20210610212135741"></p>
+<h1 id="各个层级协议"><a href="#各个层级协议" class="headerlink" title="各个层级协议"></a>各个层级协议</h1><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>协议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>应用层</td>
+<td>http、ftp、nfs、ssh、telnet</td>
+</tr>
+<tr>
+<td>传输层</td>
+<td>tcp、udp</td>
+</tr>
+<tr>
+<td>网络层</td>
+<td>IP、ICMP、IGMP</td>
+</tr>
+<tr>
+<td>链路层</td>
+<td>以太网帧协议、ARP</td>
+</tr>
+</tbody></table>
+<h1 id="C-S、B-S模型优缺点"><a href="#C-S、B-S模型优缺点" class="headerlink" title="C/S、B/S模型优缺点"></a>C/S、B/S模型优缺点</h1><table>
+<thead>
+<tr>
+<th></th>
+<th>C/S</th>
+<th>B/S</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>优点</td>
+<td>缓存大量数据、协议选择灵活、速度快</td>
+<td>安全性较高、跨平台、开发工作量小</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>开发工作量较大、安全性、不能跨平台</td>
+<td>不能缓存大量数据、阉割遵守http协议</td>
+</tr>
+</tbody></table>
+<h1 id="网络传输流程"><a href="#网络传输流程" class="headerlink" title="网络传输流程"></a>网络传输流程</h1><p>数据没有封装之前，是不能在网络中传递</p>
+<p>数据-应用层-传输层-网络层-链路层   网络环境</p>
+<h1 id="协议简介"><a href="#协议简介" class="headerlink" title="协议简介"></a>协议简介</h1><ul>
+<li><p>以太网帧协议</p>
+<ul>
+<li>ARP：根据IP地址获取mac地址</li>
+<li>以太网帧协议：根据MAC地址，完成数据包传输</li>
+</ul>
+</li>
+<li><p>IP协议</p>
+<ul>
+<li><p>版本：IPv4、IPv6</p>
+</li>
+<li><p>TTL</p>
+<ul>
+<li>time to live </li>
+<li>设置数据包在路由节点中的跳转上限。每经过一个路由  节点，该值-1，减为0的路由有义务将该数据包丢弃</li>
+</ul>
+</li>
+<li><p>源IP：32位 — 4字节 192.168.1.108—点分十进制</p>
+</li>
+<li><p>目的IP：32位—-4字节</p>
+<p>IP地址可以在网络环境中唯一标识一台主机</p>
+<p>端口号：可以在网络的一台主机上，唯一的标识一个进程</p>
+<p>IP地址+端口号：唯一标识一个进程</p>
+</li>
+</ul>
+</li>
+<li><p>UDP</p>
+<ul>
+<li>16位源端口号</li>
+<li>16位目的端口号</li>
+</ul>
+</li>
+<li><p>TCP</p>
+<ul>
+<li>16位源端口号</li>
+<li>16位目的端口号</li>
+<li>32位序号</li>
+<li>32确认序号</li>
+<li>6个标志位</li>
+<li>16位窗口大小 2^16=65536</li>
+</ul>
+</li>
+</ul>
+<h1 id="网络套接字"><a href="#网络套接字" class="headerlink" title="网络套接字"></a>网络套接字</h1><ul>
+<li><p>小端法(本地字节序)</p>
+<ul>
+<li><p>高位高地址、低位低地址                    </p>
+</li>
+<li><p>int a = 0x12345678</p>
+<ul>
+<li><img src="/2021/06/10/heimacpp-netprogram/image-20210610213342655.png" alt="image-20210610213342655" style="zoom:25%;">
+
+
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>大端法(网络字节序)</p>
+<ul>
+<li>高位低地址、低位高地址</li>
+</ul>
+</li>
+<li><p>htonl –&gt; 本地 –&gt; 网络(IP)</p>
+</li>
+<li><p>htons –&gt; 本地 –&gt; 网络(port)</p>
+</li>
+<li><p>ntohl     –&gt; 网络(IP)     –&gt; 本地</p>
+</li>
+<li><p>ntohs     –&gt; 网络(port)     –&gt; 本地</p>
+</li>
+</ul>
+<h1 id="IP地址转换"><a href="#IP地址转换" class="headerlink" title="IP地址转换"></a>IP地址转换</h1><ul>
+<li><p>int inet_pton(int af, const     char *src, void *dst);</p>
+<ul>
+<li>本地字节序转换为网络字节序</li>
+<li>af：AF_INET、AF_INET6</li>
+<li>src：IP地址(点分十进制)</li>
+<li>dst：传出：转换后的网络字节序 IP地址</li>
+<li>返回值：<ul>
+<li>成功返回 1</li>
+<li>异常返回 0，说明src指向的不是一个有效的ip地址</li>
+<li>失败返回 -1 </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><ul>
+<li></li>
+</ul>
+</li>
+<li><p>const char     *inet_ntop(int af, const void *src,char *dst, socklen_t size);</p>
+<ul>
+<li><p>本地字节序转换为网络字节序</p>
+</li>
+<li><p>af：AF_INET、AF_INET6</p>
+</li>
+<li><p>src：网络字节序IP地址</p>
+</li>
+<li><p>dst：本地字节序</p>
+</li>
+<li><p>size：dst的大小</p>
+</li>
+<li><p>返回值：</p>
+<ul>
+<li>成功返回 dst</li>
+<li>失败返回 NULL</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="sockaddr地址结构"><a href="#sockaddr地址结构" class="headerlink" title="sockaddr地址结构"></a>sockaddr地址结构</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">addr</span>；</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"><span class="title">addr</span>.<span class="title">sin_family</span> =</span> AF_INET;</span><br><span class="line"></span><br><span class="line">addr.sin_port = htons(<span class="number">8080</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> dst;</span><br><span class="line"></span><br><span class="line">inet_pton(AF_INET,<span class="string">&quot;127.0.0.1&quot;</span>,(<span class="keyword">void</span> *)&amp;dst);</span><br><span class="line"></span><br><span class="line">addr.sin_addr.s_addr = dst;</span><br><span class="line"></span><br><span class="line">addr.sin_addr.s_addr = htonl(INADDR_ANY);</span><br><span class="line"></span><br><span class="line">bind(fd,(struct sockaddr*)&amp;addr,size);</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="socket模型穿件流程图"><a href="#socket模型穿件流程图" class="headerlink" title="socket模型穿件流程图"></a>socket模型穿件流程图</h1><img src="/2021/06/10/heimacpp-netprogram/image-20210610213819187.png" alt="image-20210610213819187" style="zoom:80%;">
+
+<p><strong>一个服务端和一个客户端建立通信一共三个套接字</strong></p>
+<h2 id="服务端、客户端"><a href="#服务端、客户端" class="headerlink" title="服务端、客户端"></a>服务端、客户端</h2><ul>
+<li><p>服务端：</p>
+<ul>
+<li>bind()绑定ip+port</li>
+</ul>
+</li>
+</ul>
+<pre><code>- listen()设置同时监听上限
+
+
+
+- accept()阻塞监听客户端连接</code></pre>
+<ul>
+<li>客户端：<ul>
+<li>connect()绑定ip+port</li>
+</ul>
+</li>
+</ul>
+<h1 id="套接字函数"><a href="#套接字函数" class="headerlink" title="套接字函数"></a>套接字函数</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">socket</span><span class="params">(<span class="keyword">int</span> domain, <span class="keyword">int</span> type, <span class="keyword">int</span> protocol)</span></span>; </span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	创建一个套接字</span></span><br><span class="line"><span class="comment">*	domain: AF_INET、AF_INET6、AF_UNIX</span></span><br><span class="line"><span class="comment">*	type：SOCK_STREAM、SOCK_DGRAM</span></span><br><span class="line"><span class="comment">*	protocol：0</span></span><br><span class="line"><span class="comment">*	返回值：</span></span><br><span class="line"><span class="comment">*		成功：新套接字所对应的文件描述符</span></span><br><span class="line"><span class="comment">*		失败：-1 errno</span></span><br><span class="line"><span class="comment">**/</span>	</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bind</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *addr,<span class="keyword">socklen_t</span> addrlen)</span></span>;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	给socket绑定一个地址结构</span></span><br><span class="line"><span class="comment">*	sockfd：socket函数返回值</span></span><br><span class="line"><span class="comment">*		struct sockaddr_in addr;</span></span><br><span class="line"><span class="comment">*		addr.sin_family = AF_INET;</span></span><br><span class="line"><span class="comment">*		addr.sin_port = htons(8888);</span></span><br><span class="line"><span class="comment">*		addr.sin_addr.s_addr = htonl(INADDR_ANY);</span></span><br><span class="line"><span class="comment">*	addr：传入参数(struct sockaddr*)&amp;address</span></span><br><span class="line"><span class="comment">*	addrlen:sizeof(addr) 地址结构的大小</span></span><br><span class="line"><span class="comment">*	返回值：</span></span><br><span class="line"><span class="comment">*		成功：0</span></span><br><span class="line"><span class="comment">*		失败：-1 error</span></span><br><span class="line"><span class="comment">**/</span>		</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">listen</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">int</span> backlog)</span></span>; </span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	设置同时与服务器建立连接的上线数(同时进行3次握手 的客服端数量)</span></span><br><span class="line"><span class="comment">*	sockfd：socket函数返回值</span></span><br><span class="line"><span class="comment">*	backlog：上限的值</span></span><br><span class="line"><span class="comment">*	返回值：</span></span><br><span class="line"><span class="comment">*		成功：0</span></span><br><span class="line"><span class="comment">*		失败： -1 error</span></span><br><span class="line"><span class="comment">**/</span>	</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">accept</span><span class="params">(<span class="keyword">int</span> sockfd, struct sockaddr *addr, <span class="keyword">socklen_t</span> *addrlen)</span></span>;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	阻塞等待客服端建立连接，成功返回一个与客户端成功连接的socket文件描述符</span></span><br><span class="line"><span class="comment">*	sockfd：socket函数返回值</span></span><br><span class="line"><span class="comment">*	addr：传出参数。成功与服务器建立连接的那个客服端的地址结构</span></span><br><span class="line"><span class="comment">*	addrlen：&amp;client_addr_len。传入传出。入：addr的大小，出：客服端addr的实际大小</span></span><br><span class="line"><span class="comment">*		socket_t client_addr_len = sizeof(addr);</span></span><br><span class="line"><span class="comment">*	返回值：</span></span><br><span class="line"><span class="comment">*		成功：能与服务器进行数据通信的socket对应的文件描述符</span></span><br><span class="line"><span class="comment">*		失败：-1 error</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">int</span> <span class="title">connect</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *addr, <span class="keyword">socklen_t</span> addrlen)</span></span>;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*	使用现有socket与服务器建立连接</span></span><br><span class="line"><span class="comment">*	sockfd：socket函数返回值</span></span><br><span class="line"><span class="comment">*	addr：传入参数。服务器的地址结构(struct sockaddr*)&amp;address</span></span><br><span class="line"><span class="comment">*	addrlen：sizeof(addr) 服务器地址结构的大小</span></span><br><span class="line"><span class="comment">*	返回值：</span></span><br><span class="line"><span class="comment">*		成功：0</span></span><br><span class="line"><span class="comment">*		失败： -1 error</span></span><br><span class="line"><span class="comment">* 	如果不使用bind()函数绑定客户端地质结构，采用&quot;隐式绑定&quot;。</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="TCP通信流程分析"><a href="#TCP通信流程分析" class="headerlink" title="TCP通信流程分析"></a>TCP通信流程分析</h1><table>
+<thead>
+<tr>
+<th>server</th>
+<th></th>
+<th>client</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>socket()</td>
+<td>创建socket</td>
+<td>socket()</td>
+<td>创建socket</td>
+</tr>
+<tr>
+<td>bind()</td>
+<td>绑定服务器地址结构</td>
+<td>connect()</td>
+<td>与服务器建立连接</td>
+</tr>
+<tr>
+<td>listen()</td>
+<td>设置监听上限</td>
+<td>write()</td>
+<td>写数据到socket</td>
+</tr>
+<tr>
+<td>accept()</td>
+<td>阻塞监听客户端连接</td>
+<td>read()</td>
+<td>读数据</td>
+</tr>
+<tr>
+<td>read()</td>
+<td>读socket获取客户端数据</td>
+<td>close()</td>
+<td></td>
+</tr>
+<tr>
+<td>write()</td>
+<td>写数据</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>close()</td>
+<td>关闭套接字</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="TCP协议"><a href="#TCP协议" class="headerlink" title="TCP协议"></a>TCP协议</h1><ul>
+<li><p>三次握手</p>
+<ul>
+<li>主动发起连接请求端，发送 SYN 标志位，请求建立连接。携带数据包包号、数据字节数(0)、滑动窗口大小。</li>
+<li>被动接受连接请求端，发送 ACK 标志位，同时携带 SYN 请求标志位。携带序号、确认序号、数据字节数(0)、滑动窗口大小。</li>
+<li>主动发起连接请求端，发送 ACK 标志位，应答服务器连接请求。携带序号、确认序号</li>
+</ul>
+</li>
+<li><p><img src="/2021/06/10/heimacpp-netprogram/image-20210613142506250.png" alt="image-20210613142506250"></p>
+</li>
+<li><p>四次挥手</p>
+<ul>
+<li>主动关闭连接请求端，发送 FIN 标志位。</li>
+<li>被动关闭连接请求端，应答 ACK 标志位。 —–半关闭完成</li>
+<li>被动关闭连接请求端，发送 FIN 标志位。</li>
+<li>主动关闭连接请求端，应答 ACK 标志位 。——连接全部关闭</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2021/06/10/heimacpp-netprogram/image-20210613152316871.png" alt="image-20210613152316871"></p>
+<ul>
+<li>滑动窗口<ul>
+<li>发送给连接对端，本段缓冲区实时大小，保证数据不会丢失</li>
+</ul>
+</li>
+</ul>
+<h1 id="TCP状态时序图"><a href="#TCP状态时序图" class="headerlink" title="TCP状态时序图"></a>TCP状态时序图</h1><p><img src="/2021/06/10/heimacpp-netprogram/image-20210629165910770.png" alt="image-20210629165910770"></p>
+<ol>
+<li><p>主动发起连接请求端：CLOSE — 发送SYN — SYN_SEND — 接收ACK、SYN — SYN_SEND — 发送方ACK — ESTABLISHED(数据通信状态)</p>
+</li>
+<li><p>主动关闭连接请求端：ESTABLISHED(数据通信状态) — 发送FIN — FIN_WAIT_1—  接收ACK —  FIN_WAIT_2 —  接收对端发送的FIN — FIN_WAIT_2 — 回发ACK — TIME_WAIT(只有主动关闭连接方，会经历该状态) —  等2MSL时长 — CLOSED</p>
+</li>
+<li><p>被动接收连接请求端：CLOSE — LISTEN — 接收SYN — LISTEN — 发送ACK、SYN — SYN_RCVD — 接收ACK — ESTABLISHED</p>
+</li>
+<li><p>被动关闭连接请求端：ESTABLISHED—接收对端FIN — ESTABLISHED — 发送ACK — CLOSE_WAIT(说明对端(主动关闭连接端)处于半关闭状态) — 发送FIN — LAST_ACK — 接收ACK — CLOSE</p>
+</li>
+</ol>
+<p><em>重点记忆： ESTABLISHED、FIN_WAIT_2 、CLOSE_WAIT、TIME_WAIT(2MSL时长)</em></p>
+<h2 id="2MSL时长"><a href="#2MSL时长" class="headerlink" title="2MSL时长"></a>2MSL时长</h2><p><strong><em>一定出现在主动关闭连接请求一端</em></strong></p>
+<p><strong>保证，最后一个ACK能被成功接收。(等待期间，对端没有接收到ACK，对端会再次发送FIN请求)</strong></p>
+<h2 id="端口复用"><a href="#端口复用" class="headerlink" title="端口复用"></a>端口复用</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> opt = <span class="number">1</span>; <span class="comment">//设置端口复用</span></span><br><span class="line">setsockopt(lfd,SOL_SOCKET,SO_REUSEADDR,(<span class="keyword">void</span> *)&amp;opt,<span class="keyword">sizeof</span>(opt));</span><br></pre></td></tr></table></figure>
+
+<h2 id="半关闭"><a href="#半关闭" class="headerlink" title="半关闭"></a>半关闭</h2><p><em>通信双方只有一端关闭通信。——FIN_WAIT_2(半关闭状态)</em></p>
+<p><code>close(cfd);</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">shutdown</span><span class="params">(itn fd, <span class="keyword">int</span> how)</span></span></span><br><span class="line"><span class="function"><span class="comment">/**    how:	SHUT_RD 	关闭读</span></span></span><br><span class="line"><span class="function"><span class="comment"> *       	SHUT_WR		关闭写</span></span></span><br><span class="line"><span class="function"><span class="comment"> *       	SHUT_RDWR	关闭读写</span></span></span><br><span class="line"><span class="function"><span class="comment">**/</span></span></span><br></pre></td></tr></table></figure>
+
+<p><strong>区别：</strong></p>
+<ul>
+<li>shutdown在关闭多个文件描述符应用的文件时，采用全关闭的方法，close只关闭一个</li>
+</ul>
+<h1 id="错误处理函数"><a href="#错误处理函数" class="headerlink" title="错误处理函数"></a>错误处理函数</h1><p><strong>封装目的</strong></p>
+<ul>
+<li>在server.c编程过程中突出裸机，将出错处理与逻辑分开，可以直接跳转man手册</li>
+</ul>
+<p><strong>wrap.c</strong></p>
+<ul>
+<li>存放网络信相关常用　自定义函数</li>
+<li>命名方式：<ul>
+<li>系统调用函数首字母大写 方便查看man手册。如：Listen()、Accept()</li>
+</ul>
+</li>
+<li>函数功能：调用系统调用函数，处理出错场景</li>
+<li>在server.c 和 client.c 中调用 自定义函数<ul>
+<li>server.c 和 wrap.c 生成 server</li>
+<li>client.c 和 wrap.c 生成 client</li>
+</ul>
+</li>
+</ul>
+<p><strong>wrap.h</strong></p>
+<ul>
+<li>存放 网络通信相关常用 自定义函数原神(声明)</li>
+</ul>
+<h1 id="高并发服务器"><a href="#高并发服务器" class="headerlink" title="高并发服务器"></a>高并发服务器</h1><h2 id="多进程并发服务器"><a href="#多进程并发服务器" class="headerlink" title="多进程并发服务器"></a>多进程并发服务器</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Socket();				<span class="comment">//创建监听套接字 lfd</span></span><br><span class="line">Bind();					<span class="comment">//绑定地址结构 </span></span><br><span class="line">Listen();				<span class="comment">//设置监听上限</span></span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    cfd = Accpet();		<span class="comment">//接收客户端连接请求</span></span><br><span class="line">    pid = fork();		<span class="comment">//</span></span><br><span class="line">    	</span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)		<span class="comment">//子进程read()--&gt;小写转大写--&gt;write(cfd)</span></span><br><span class="line">    &#123;</span><br><span class="line">        close(lfd);		<span class="comment">//关闭用于建立连接的套接字</span></span><br><span class="line">        read();	</span><br><span class="line">        upper();</span><br><span class="line">        write();</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        close(cfd);		<span class="comment">//关闭用于与客户端通信的套接字 cfd</span></span><br><span class="line"></span><br><span class="line">        contiue;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>子进程</p>
+<ul>
+<li> close(lfd);        //关闭用于建立连接的套接字</li>
+<li>read();    </li>
+<li>upper();</li>
+<li> write();</li>
+</ul>
+</li>
+<li><p>父进程</p>
+<ul>
+<li><p>注册信号捕捉函数：SIGCHLD</p>
+</li>
+<li><p>在回调函数中，完成子进程回收</p>
+<p>  ​        while ( waitpid());</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="多线程并发服务器"><a href="#多线程并发服务器" class="headerlink" title="多线程并发服务器"></a>多线程并发服务器</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Socket();				<span class="comment">//创建监听套接字 lfd</span></span><br><span class="line">Bind();					<span class="comment">//绑定地址结构 </span></span><br><span class="line">Listen();				<span class="comment">//设置监听上限</span></span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    cfd = Accpet();		<span class="comment">//接收客户端连接请求</span></span><br><span class="line">    pthread_create(&amp;tid, <span class="literal">NULL</span>,tfn,<span class="literal">NULL</span>);</span><br><span class="line">    pthread_detach(tid);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//子线程</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">tfn</span><span class="params">(<span class="keyword">void</span> *arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    close(lfd);</span><br><span class="line">	read(cfd);	</span><br><span class="line">    upper();</span><br><span class="line">    write(cfd);</span><br><span class="line">    pthread_exit((<span class="keyword">void</span>*)<span class="number">10</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="read函数返回值"><a href="#read函数返回值" class="headerlink" title="read函数返回值"></a>read函数返回值</h2><ol>
+<li>大于0   实际读到的字节数</li>
+<li>等于0   已经读到结尾(对端已经关闭)【重点】</li>
+<li>-1         应该进一步判断errno的值<ol>
+<li>errno= EAGAIN or EWOULDBLOCK：设置了非阻塞方式读。没有数据到达</li>
+<li>errno= EINTR 慢速系统调用被 中断</li>
+<li>errno= “其他情况” 异常。</li>
+</ol>
+</li>
+</ol>
+<h2 id="select多路IO转接"><a href="#select多路IO转接" class="headerlink" title="select多路IO转接"></a>select多路IO转接</h2><ul>
+<li>原理：借助内核，select来监听，客户端连接、数据通            信事件</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 清空一个文件描述符集合</span></span><br><span class="line"><span class="comment"> * fd_set rset;</span></span><br><span class="line"><span class="comment"> * FD_ZERO(&amp;rset);</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_ZERO</span><span class="params">(fd_set *<span class="built_in">set</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将监听的文件描述符，添加到集合中</span></span><br><span class="line"><span class="comment"> * FD_SET(3,&amp;rset);FD_SET(4,&amp;rset);FD_SET(5,&amp;rset);</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_SET</span><span class="params">(<span class="keyword">int</span> fd,fd_set*<span class="built_in">set</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 将一个文件描述符从监听集合中删除</span></span><br><span class="line"><span class="comment">* FD_CLR(4,&amp;rset);</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_CLR</span><span class="params">(<span class="keyword">int</span> fd,fd_set *<span class="built_in">set</span>)</span></span>;</span><br><span class="line">		</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 判断一个文件描述符是否在监听集合中</span></span><br><span class="line"><span class="comment"> * FD_ISSET(4,&amp;rset);</span></span><br><span class="line"><span class="comment"> * 返回值：在：1；不在：0;</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FD_ISSET</span><span class="params">(<span class="keyword">int</span> fd,fd_set *<span class="built_in">set</span>)</span></span>;</span><br><span class="line">		</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 判断一个文件描述符是否在监听集合中</span></span><br><span class="line"><span class="comment"> * nfds: 监听的所有文件描述符中，最大文件描述符+1</span></span><br><span class="line"><span class="comment"> * readfds:		读 	 文件描述符监听集合  传入传出参数</span></span><br><span class="line"><span class="comment"> * writefds: 	写 	 文件描述符监听集合	传入传出参数	NULL</span></span><br><span class="line"><span class="comment"> * exceptfds: 	异常  文件描述符监听集合	传入传出参数	NULL</span></span><br><span class="line"><span class="comment"> * timeout:	&gt;0: 	设置监听超时时长</span></span><br><span class="line"><span class="comment"> 			NULL: 	阻塞监听</span></span><br><span class="line"><span class="comment"> 			0:		非阻塞监听,轮询</span></span><br><span class="line"><span class="comment"> * 返回值:</span></span><br><span class="line"><span class="comment"> 			&gt;0:		所有监听 集合中，满足对应事件的总数。</span></span><br><span class="line"><span class="comment"> 			 0:		没有满足监听条件的文件描述符</span></span><br><span class="line"><span class="comment"> 			-1:		errno</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, struct timeval *timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong><em>思路分析：</em></strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">lfd = socket();  					<span class="comment">//创建套接字</span></span><br><span class="line">bind();								<span class="comment">//绑定地址结构</span></span><br><span class="line">listen();							<span class="comment">//设置监听上限</span></span><br><span class="line"></span><br><span class="line">fd_set rset,allset;					<span class="comment">//创建r监听集合					</span></span><br><span class="line">FD_ZERO(&amp;allset);					<span class="comment">//将监听r集合清空</span></span><br><span class="line">FD_SET(lfd,&amp;allset);				<span class="comment">//将lfd添加至读集合中</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    rset = allset;					<span class="comment">//保存监听集合</span></span><br><span class="line">    ret = select(lfd+<span class="number">1</span>,&amp;rset,<span class="literal">NULL</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>); <span class="comment">//监听文件描述符集合对应事件</span></span><br><span class="line">    <span class="keyword">if</span>(ret&gt;<span class="number">0</span>)&#123;						<span class="comment">//有监听的描述符满足对应事件</span></span><br><span class="line">        <span class="keyword">if</span>(FD_ISSET(lfd,&amp;rset))</span><br><span class="line">        &#123;</span><br><span class="line">            cfd = accept();			<span class="comment">//建立连接，返回用于通信的文件描述符</span></span><br><span class="line">            FD_SET(cfd,&amp;allset);	<span class="comment">//添加到监听通信描述符集合中</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(i=lfd+<span class="number">1</span>;i&lt;=最大文件描述符;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            FD_ISSET(i,&amp;rset);</span><br><span class="line">            read();</span><br><span class="line">            小---大</span><br><span class="line">            write();</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;   </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+    </div>
+
+    
+    
+    
+	<div>
+		
+			<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------THE END-------------</div>
+    
+</div>
+
+		
+	</div>
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/wechat_channel.jpg">
+            <span class="icon">
+              <i class="fab fa-weixin"></i>
+            </span>
+
+            <span class="label">WeChat</span>
+          </a>
+        </div>
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" rel="tag"># Linux网络编程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/07/RT-Thread-Mqtt-Modbus%E7%BA%BF%E4%B8%8B%E5%9F%B9%E8%AE%AD/" rel="prev" title="RT-Thread_Mqtt_Modbus线下培训">
+      <i class="fa fa-chevron-left"></i> RT-Thread_Mqtt_Modbus线下培训
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/16/select%E3%80%81poll%E3%80%81epoll%E7%9A%84%E4%BD%BF%E7%94%A8/" rel="next" title="select、poll、epoll的使用">
+      select、poll、epoll的使用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B-TCP-IP%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">OSI七层模型-TCP&#x2F;IP模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%84%E4%B8%AA%E5%B1%82%E7%BA%A7%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.</span> <span class="nav-text">各个层级协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-S%E3%80%81B-S%E6%A8%A1%E5%9E%8B%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">3.</span> <span class="nav-text">C&#x2F;S、B&#x2F;S模型优缺点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">网络传输流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B"><span class="nav-number">5.</span> <span class="nav-text">协议简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%A5%97%E6%8E%A5%E5%AD%97"><span class="nav-number">6.</span> <span class="nav-text">网络套接字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IP%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2"><span class="nav-number">7.</span> <span class="nav-text">IP地址转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sockaddr%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84"><span class="nav-number">8.</span> <span class="nav-text">sockaddr地址结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#socket%E6%A8%A1%E5%9E%8B%E7%A9%BF%E4%BB%B6%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">9.</span> <span class="nav-text">socket模型穿件流程图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E3%80%81%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">9.1.</span> <span class="nav-text">服务端、客户端</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A5%97%E6%8E%A5%E5%AD%97%E5%87%BD%E6%95%B0"><span class="nav-number">10.</span> <span class="nav-text">套接字函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP%E9%80%9A%E4%BF%A1%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90"><span class="nav-number">11.</span> <span class="nav-text">TCP通信流程分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP%E5%8D%8F%E8%AE%AE"><span class="nav-number">12.</span> <span class="nav-text">TCP协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP%E7%8A%B6%E6%80%81%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="nav-number">13.</span> <span class="nav-text">TCP状态时序图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2MSL%E6%97%B6%E9%95%BF"><span class="nav-number">13.1.</span> <span class="nav-text">2MSL时长</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%AF%E5%8F%A3%E5%A4%8D%E7%94%A8"><span class="nav-number">13.2.</span> <span class="nav-text">端口复用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8A%E5%85%B3%E9%97%AD"><span class="nav-number">13.3.</span> <span class="nav-text">半关闭</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0"><span class="nav-number">14.</span> <span class="nav-text">错误处理函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AB%98%E5%B9%B6%E5%8F%91%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">15.</span> <span class="nav-text">高并发服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%B9%B6%E5%8F%91%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">15.1.</span> <span class="nav-text">多进程并发服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">15.2.</span> <span class="nav-text">多线程并发服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#read%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="nav-number">15.3.</span> <span class="nav-text">read函数返回值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#select%E5%A4%9A%E8%B7%AFIO%E8%BD%AC%E6%8E%A5"><span class="nav-number">15.4.</span> <span class="nav-text">select多路IO转接</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MiengGiet"
+      src="/images/bh3.jpg">
+  <p class="site-author-name" itemprop="name">MiengGiet</p>
+  <div class="site-description" itemprop="description">摸鱼</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ethereal14" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ethereal14" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1097282916@qq.com" title="E-Mail → mailto:1097282916@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://yoursite.com/" title="http:&#x2F;&#x2F;yoursite.com" rel="noopener" target="_blank">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MiengGiet</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">92k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:24</span>
+</div>
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共30.4k字</span>
+</div>
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<script type="text/javascript" src="/js/clicklove.js"></script>
+<!-- 动态背景 -->
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+
